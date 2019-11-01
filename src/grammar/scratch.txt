@@ -1,0 +1,9 @@
+NBar -> N
+
+NBar -> NBar NBarConj
+
+NBarConj -> Conj NBar
+
+
+
+eggs beans [NBarConj [Conj and] [NBar [N spam]]]

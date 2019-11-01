@@ -1,0 +1,110 @@
+[
+    {"mother": {"cat": "S"},
+     "dtrs": [
+	 {"dtr": "Subject",
+	  "analysis": {"cat": "NP",
+		       "number": [1]}},
+	 {"dtr": "Predicate",
+	  "analysis": {"cat": "VP",
+		       "number": [1]}}]},
+
+
+    {"mother": {"cat": "NP",
+		"number": [1]},
+     "dtrs": [
+	 {"dtr": "Det",
+	  "analysis": {"cat": "Det",
+		       "number": [1]}},
+	 {"dtr": "Head",
+	  "analysis": {"cat": "Noun",
+		       "number": [1]}}]},
+
+    {"mother": {"cat": "VP",
+		"number": [1]},
+     "dtrs": [
+	 {"dtr": "Head",
+	  "analysis": {"cat": "Verb",
+		       "number": [1]}}]}
+]
+
+{
+    1: {"range": [1, 1],
+	"parents": [2, 5],
+	"analysis": {
+	    "cat": "Det",
+	    "lex": "the",
+	    "number": "num-unspc"}},
+    2: {"range": [1, 1],
+	"parents": [3],
+	"analysis": {
+	    "cat": "NP",
+	    "number": [1],
+	    "filled": [
+		 {"dtr": "Det",
+		  "node": 1}],
+	    "open": [
+		 {"dtr": "Head",
+		  "analysis": {"cat": "Noun",
+			       "number": [1]}}],
+	    "bindings": {
+		1: "num-unspc"}}},
+    3: {"range": [1, 1],
+	"analysis": {
+	    "cat": "S",
+	    "filled": [
+		{"dtr": "Subject",
+		 "node": 2}],
+	    "open": [
+		{"dtr": "Predicate",
+		 "analysis": {"cat": "VP",
+			      "number": [1]}}],
+	    "bindings": {
+		1: "num-unspc"}}},
+    4: {"range": [2, 2],
+	"parents": 5,
+	"analysis": {
+	    "cat": "Noun",
+	    "lex": "dog",
+	    "number": "sg"}},
+    5: {"range": [1, 2],
+	"parents": [6],
+	"analysis": {
+	    "cat": "NP",
+	    "number": "sg",
+	    "filled": [
+		{"dtr": "Det",
+		 "node": 1},
+		{"dtr": "Head",
+		 "node": 4}]}},
+    6: {"range": [1, 2],
+	"analysis": {
+	    "cat": "S",
+	    "filled": [
+		{"dtr": "Subject",
+		 "node": 5}],
+	    "open": [
+		{"dtr": "Predicate",
+		 "analysis": {"cat": "VP",
+			      "number": [1]}}],
+	    "bindings": {
+		1: "sg"}}}
+    6: {"range": [3, 3],
+	"analysis": {
+	    "cat": "Verb",
+	    "lex": "bark",
+	    "number": "sg"}},
+    7: {"range": [3, 3],
+	"analysis": {
+	    "cat": "VP",
+	    "number": "sg",
+	    "filled": [
+		{"dtr": "Head",
+		 "node": 6}]}},
+    8: {"range": [1, 3],
+	"analysis": {
+	    "cat": "S",
+	    "filled": [
+		{"dtr": "Subject",
+		 "node": 5},
+		{"dtr": "Predicate",
+		 "node": 7}]}}}

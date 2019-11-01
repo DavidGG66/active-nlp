@@ -1,0 +1,50 @@
+[
+    ["done", 0, 0, "", "dog"],
+    ["done", 2, 0, "e", "dog"],
+    ["done", 0, 0, "d", "og"],
+    ["done", 2, 0, "de", "og"],
+    ["done", 0, 1, "do", "g"],
+    ["done", 2, 1, "doe", "g"],
+    ["preVowel", 0, 0, "dog", ""],
+    ["done", 0, 7, "dog", ""],
+    ["preVowel", 2, 0, "doge", ""],
+    ["done", 2, 7, "doge", ""]
+]
+
+[
+    ["done", 0, 0, "", "doge"],
+    ...,
+    ["done", 0, 1, "do", "ge"],
+    ["done", 2, 1, "doe", "ge"],
+    ["done", 0, 0, "dog", "e"],
+    ["done", 0, 7, "dog", "e"],
+    ["done", 2, 0, "doge", "e"],
+    ["done", 1, 1, "doge", ""],
+    ["done", 2, 7, "doge", "e"],
+    ["done", 2, 1, "dogee", ""]
+]
+
+[
+    ["done", 0, 0, "", "dogg"],
+    ...,
+    ["done", 0, 1, "do", "gg"],
+    ["done", 2, 1, "doe", "gg"],
+    ["done", 0, 0, "dog", "g"],
+    ["done", 0, 7, "dog", "g"],
+    ["done", 2, 0, "doge", "g"],
+    ["preVowel", 0, 0, "dogg", ""],
+    ["done", 2, 7, "doge", "g"],
+    ["preVowel", 0, 18, "dog", ""],
+    ["preVowel", 2, 0, "dogge", ""]
+]
+
+[
+    ["done", 0, 0, 0, "", "fli"],
+    ["done", 2, 0, 0, "e", "fli"],
+    ["done", 0, 0, 0, "f", "li"],
+    ["done", 2, 0, 0, "fe", "li"],
+    ["done", 0, 0, 0, "fl", "i"],
+    ["working", 0, 1, 1, "fli", ""],
+    ["new", 0, 3, 1, "fly", ""],
+    ["new", 2, 1, 1 "flie", ""]
+]

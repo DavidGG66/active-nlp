@@ -1,0 +1,230 @@
+[
+    {"comment": [
+	"",
+	"   Promote a (lexical) name to a (phrasal) NamePhrase",
+	""],
+     "name": "NamePhrase -> Name",
+     "mother": {
+	 "syn": {
+	     "cat": "NamePhrase"},
+	 "sem": {
+	     "relspecs": [
+		 {"rel": "Quant",
+		  "roles": {
+		      "RESTR": "x1",
+		      "SCOPE": "x2",
+		      "QUANT": "x3",
+		      "DEF": "definite"}},
+		 {"rel": "AbsVal",
+		  "roles": {
+		      "NODE": "x3",
+		      "VAL": 1}}],
+	     "hooks": {
+		 "head": "x1",
+		 "root": "x2"}}},
+     "dtrs": [
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "Name"}]}],
+     "head": {
+	 "dtr": "Head",
+	 "hooks": ["head"]}},
+    
+    {"comment": [
+	"",
+	"   Promote a (lexical) noun to a (phrasal) N1",
+	""],
+     "name": "N1 -> N",
+     "mother": {
+	 "syn": {
+	     "cat": "N1"}},
+     "dtrs": [
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "Noun"}]}],
+     "head": {
+	 "dtr": "Head",
+	 "syn": ["agr"],
+	 "hooks": ["head", "quant"]}},
+
+    {"comment": [
+	"",
+	"   Nouns and names can pre-modify a head noun",
+	""],
+     "name": "N1 -> N1 N1",
+     "mother": {
+	 "syn": {
+	     "cat": "N1"},
+	 "sem": {
+	     "function": "noun-noun-relspecs",
+	     "args": [
+		 "*Head",
+		 "*Mod"]}},
+     "dtrs": [
+	 {"dtr": "Mod",
+	  "analyses": [
+	      {"cat": "N1",
+	       "agr": {
+		   "sg": "+"}},
+	      {"cat": "NamePhrase"}],
+	  "hooks": {
+	      "head": ["*Mod"]}},
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "N1"}],
+	  "hooks": {
+	      "head": ["*Head"]}}],
+     "head": {
+	 "dtr": "Head",
+	 "syn": ["agr"],
+	 "hooks": ["head", "quant"]}},
+    
+    {"comment": [
+	"",
+	"   Make an NP (everything but the Det) from a noun and its modifiers",
+	""
+    ],
+     "name": "N2 -> (AP) N1 PostMod*",
+     "mother": {
+	 "syn": {
+	     "cat": "N2"}},
+     "dtrs": [
+	 {"dtr": "PreAdj",
+	  "repeatable": true,
+	  "optional": true,
+	  "analyses": [
+	      {"cat": "AdjP"}],
+	  "hooks": {
+	      "head": ["*Head"]}},
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "N1"}],
+	  "hooks": {
+	      "head": ["*Head"]}},
+	 {"dtr": "PostMod",
+	  "analyses": [
+	      {"cat": "PP"},
+	      {"cat": "RelC"},
+	      {"cat": "VP",
+	       "tense": "non-finite"}],
+	  "hooks": {
+	      "head": ["*Head"]}}],
+     "head": {
+	 "dtr": "Head",
+	 "features": ["agr"],
+	 "hooks": ["head", "quant"]}},
+    
+    {"comment": [
+	"",
+	"   Add a fixed-quantification determiner to a noun phrase",
+	"   e.g. 'a' which determines singular cardinality",
+	""],
+     "name": "NP -> Det[fixed] N2",
+     "mother": {
+	 "syn": {"cat": "NP"},
+	 "hooks": {"root": ["*Root"]}},
+     "dtrs": [
+	 {"dtr": "Det",
+	  "analyses": [
+	      {"cat": "Det",
+	       "quant": "fixed",
+	       "agr": ["*Agr"]}],
+	  "hooks": {
+	      "head": ["*Head"],
+	      "root": ["*Root"]}},
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "N2",
+	       "agr": ["*Agr"]}],
+	  "hooks": {"head": ["*Head"]}}],
+     "head": {
+	 "dtr": "Head",
+	 "features": ["agr"],
+	 "hooks": ["head"]}},
+    
+    {"comment": [
+	"",
+	"   Add an open-quantification determiner to a noun phrase",
+	"   e.g. 'the', whose cardinality comes from the head noun",
+	""],
+     "name": "NP -> Det[open] N2",
+     "mother": {
+	 "syn": {"cat": "NP"},
+	 "hooks": {"root": ["*Root"]}},
+     "dtrs": [
+	 {"dtr": "Det",
+	  "analyses": [
+	      {"cat": "Det",
+	       "quant": "open",
+	       "agr": ["*Agr"]}],
+	  "hooks": {
+	      "head": ["*Head"],
+	      "root": ["*Root"],
+	      "quant": ["*Quant"]}},
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "N2",
+	       "agr": ["*Agr"]}],
+	  "hooks": {
+	      "head": ["*Head"],
+	      "quant": ["*Quant"]}}],
+     "head": {
+	 "dtr": "Head",
+	 "features": ["agr"],
+	 "hooks": ["head"]}},
+
+    {"comment": [
+	"",
+	"   Make a null-quantifier noun phrase",
+	""],
+     "name": "NP -> N2",
+     "mother": {
+	 "syn": {"cat": "NP"},
+	 "sem": {
+	     "relspecs": [
+		 {"rel": "Quant",
+		  "roles": {
+		      "RESTR": "x1",
+		      "SCOPE": "x2",
+		      "QUANT": "x3",
+		      "DEF": "definite"}},
+		 {"rel": "Abstract",
+		  "roles": {
+		      "ABSTR": "x1",
+		      "SET": "x4"}},
+		 {"rel": "AbsVal",
+		  "roles": {
+		      "NODE": "x3",
+		      "VAL": 1}}],
+	     "hooks": {
+		 "head": "x4",
+		 "root": "x2"}}},
+     "dtrs": [
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "N2",
+	       "agr": {"plu": "+"}}]}],
+     "head": {
+	 "dtr": "Head",
+	 "features": ["agr"],
+	 "hooks": ["head"]}},
+
+    {"comment": [
+	"",
+	"   Make a noun phrase from a name",
+	""],
+     "name": "NP -> NamePhrase",
+     "mother": {
+	 "syn": {
+	     "cat": "NounPhrase",
+	     "agr": {
+		 "sg": "+",
+		 "plu": "-"}}},
+     "dtrs": [
+	 {"dtr": "Head",
+	  "analyses": [
+	      {"cat": "NamePhrase"}]}],
+     "head": {
+	 "dtr": "Head",
+	 "hooks": ["head", "root"]}}
+]

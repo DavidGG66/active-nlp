@@ -1,0 +1,8 @@
+# Load the lexicon
+#
+# src.lexicon.load
+#
+
+from src.morph.fst import FST
+lexicon = {}
+lexFsa = FST()

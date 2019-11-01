@@ -1,0 +1,19 @@
+[
+    {"mother": {"cat": "S"},
+     "dtrs": [
+	 {"dtr": "Subject",
+	  "analysis": {"cat": "NP",
+		       "number": [1]}},
+	 {"dtr": "Predicate",
+	  "analysis": {"cat": "VP",
+		       "number": [1]}}]},
+    {"mother": {"cat": "NP",
+		"number": [1]},
+     "dtrs": [
+	 {"dtr": "Det",
+	  "analysis": {"cat": "Det",
+		       "number": [1]}},
+	 {"dtr": "Head",
+	  "analysis": {"cat": "Noun",
+		       "number": [1]}}]}
+]

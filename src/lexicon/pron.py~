@@ -1,0 +1,12 @@
+# Pronoun lexicon
+
+import src.common.synval :as syn
+import src.common.semval :as sem
+import src.common.synsem :as ss
+
+def PronLex():
+
+    synVal = syn.SynValue("PronLex", True)
+    semVal = sem.SemValue()
+
+    return ss.SynSem(synVal, semVal)

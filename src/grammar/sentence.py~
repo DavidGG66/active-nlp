@@ -1,0 +1,15 @@
+# Rules for 'S', a sentence
+
+sentence_rules = [
+    {"name": "S -> NP VP",
+     "mother": {"cat": "S"},
+     "dtrs": [
+         {"dtr": "Subject",
+          "analysis": {
+              "cat": "NP",
+              "agr": "*1"}},
+         {"dtr": "Predicate",
+          "analysis": {
+              "cat": "VP",
+              "agr": "*1"}}]}
+    ]
