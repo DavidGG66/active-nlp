@@ -29,22 +29,22 @@ def DetLex(sg, plu, df, width):
     semVal = sem.SemValue()
     semVal.AddRelspec(relspec, {}, hooks)
 
-    return ss.SynSem(synVal, semVal)
+    return synVal, semVal
 
 
 def DetFixedLex(sg, plu, df, width, rel, val):
 
-    ret = DetLex(sg, plu, df, width)
-    ret.synVal["quant"] = "fixed"
+    synVal, semVal = DetLex(sg, plu, df, width)
+    synVal["quant"] = "fixed"
 
     roles = {
         "NODE": "x3",
         "VAL": 1}
     
     relspec = sem.Relspec("AbsVal", roles)
-    ret.semVal.AddRelspec(relspec, {"x3": "quant"}, {})
+    semVal.AddRelspec(relspec, {"x3": "quant"}, {})
 
-    return ret
+    return ss.SynSem(synVal, semVal)
 
 
 def DetRelLex(sg, plu, width, val):
@@ -54,10 +54,10 @@ def DetRelLex(sg, plu, width, val):
 
 def DetOpenLex(sg, plu, df, width):
 
-    ret = DetLex(sg, plu, df, width)
-    ret.synVal["quant"] = "open"
+    synVal, semVal = DetLex(sg, plu, df, width)
+    synVal["quant"] = "open"
 
-    return ret
+    return ss.SynSem(synVal, semVal)
 
 fixedDets = [("a", "+", "-", "indef", "narrow", "AbsVal", 1)]
 
