@@ -1,9 +1,0 @@
-# SynSem objects, pairings of syntactic and semantic information
-
-import src.common.sem as cs
-
-class SynSem():
-
-    def __init__(self):
-        self.syn = SynValue()
-        self.sem = SemValue()
