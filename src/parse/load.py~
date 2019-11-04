@@ -1,4 +1,0 @@
-# Load a grammar
-
-def load_grammar():
-    print("Hello")
