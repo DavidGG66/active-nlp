@@ -1,14 +1,17 @@
 # Noun lexicon
+#
+# src.lexicon.noun
+#
 
-import src.common.synval as syn
-import src.common.semval as sem
-import src.common.synsem as ss
+from src.common.synval import SynValue
+from src.common.semval import Relspec, SemValue
+from src.common.synsem import SynSem
 
-from src.lexicon.core import AddLex
+from src.lexicon.core import add_lex
 
-def NounLex(rel, role):
+def noun_lex(rel, role):
 
-    synVal = syn.SynValue("NounLex", True)
+    syn_val = SynValue("NounLex", True)
 
     roles = {
         rel: "x1",
@@ -18,56 +21,56 @@ def NounLex(rel, role):
         "head": "x1",
         "event": "x2"}
     
-    relspec = sem.Relspec(rel, roles)
-    semVal = sem.SemValue()
-    semVal.AddRelspec(relspec, {}, hooks)
+    relspec = Relspec(rel, roles)
+    sem_val = SemValue()
+    sem_val.add_relspec(relspec, {}, hooks)
 
-    return ss.SynSem(synVal, semVal)
+    return SynSem(syn_val, sem_val)
 
-def NounCountLex(rel, role):
+def noun_count_lex(rel, role):
 
-    ret = NounLex(rel, role)
-    ret.synVal["quantType"] = "count"
-
-    return ret
-
-
-def NounMassLex(rel, role):
-
-    ret = NounLex(rel, role)
-    ret.synVal["quantType"] = "mass"
+    ret = noun_lex(rel, role)
+    ret.syn_val["quantType"] = "count"
 
     return ret
 
 
-def NounRegSgLex(rel, role):
+def noun_mass_lex(rel, role):
 
-    ret = NounCountLex(rel, role)
-    ret.synVal["regPlu"] = True
-    ret.synVal["plural"] = False
-
-    return ret
-
-
-def NounIrrSgLex(rel, role):
-
-    ret = NounCountLex(rel, role)
-    ret.synVal["regPlu"] = False
-    ret.synVal["plural"] = False
+    ret = noun_lex(rel, role)
+    ret.syn_val["quantType"] = "mass"
 
     return ret
 
 
-def NounIrrPluLex(rel, role):
+def noun_reg_sg_lex(rel, role):
 
-    ret = NounCountLex(rel, role)
-    ret.synVal["regPlu"] = False
-    ret.synVal["plural"] = True
+    ret = noun_count_lex(rel, role)
+    ret.syn_val["regPlu"] = True
+    ret.syn_val["plural"] = False
 
     return ret
 
 
-regSgNouns = [
+def noun_irr_sg_lex(rel, role):
+
+    ret = noun_count_lex(rel, role)
+    ret.syn_val["regPlu"] = False
+    ret.syn_val["plural"] = False
+
+    return ret
+
+
+def noun_irr_plu_lex(rel, role):
+
+    ret = noun_count_lex(rel, role)
+    ret.syn_val["regPlu"] = False
+    ret.syn_val["plural"] = True
+
+    return ret
+
+
+reg_sg_nouns = [
     ("case", "Case", "CASE"),
     ("company", "Company", "COMPANY"),
     ("day", "Day", "DAY"),
@@ -76,19 +79,22 @@ regSgNouns = [
     ("girl", "Girl", "GIRL"),
     ("hand", "Hand", "HAND"),
     ("number", "Number", "NUMBER"),
+    ("pain", "Pain1", "PAIN"),
     ("part", "Part", "PART"),
     ("place", "Place", "PLACE"),
     ("point", "Point", "POINT"),
+    ("rack", "Rack", "RACK"),
     ("telescope", "Telescope", "TELESCOPE"),
     ("thing", "Thing", "THING"),
     ("time", "Time", "TIME"),
+    ("track", "Track", "TRACK"),
     ("way", "Way", "WAY"),
     ("week", "Week", "WEEK"),
     ("world", "World", "WORLD"),
     ("year", "Year", "YEAR")]
 
 
-irrNouns = [
+irr_nouns = [
     ("child", "children", "Child", "CHILD"),
     ("life", "lives", "Life", "LIFE"),
     ("man", "men", "Man", "MAN"),
@@ -96,20 +102,22 @@ irrNouns = [
     ("woman", "women", "Woman", "WOMAN")]
 
 
-massNouns = [
+mass_nouns = [
     ("life", "Life", "LIFE"),
+    ("pain", "Pain2", "PAIN"),
+    ("paint", "paint", "PAIN"),
     ("work", "Work", "WORK")]
 
 
-def AddNounsToLex(lex, fsa):
-    def AddNoun(form, synSem):
-        AddLex(form, lex, synSem, fsa, "noun")
+def add_nouns_to_lex(lex, fsa):
+    def add_noun(form, synSem):
+        add_lex(form, lex, synSem, fsa, "noun")
         
-    for form, rel, role in regSgNouns:
-        AddNoun(form, NounRegSgLex(rel, role))
-    for sgForm, plForm, rel, role in irrNouns:
-        AddNoun(sgForm, NounIrrSgLex(rel, role))
-        AddNoun(plForm, NounIrrPluLex(rel, role))
-    for form, rel, role in massNouns:
-        AddNoun(form, NounMassLex(rel, role))
+    for form, rel, role in reg_sg_nouns:
+        add_noun(form, noun_reg_sg_lex(rel, role))
+    for sgForm, plForm, rel, role in irr_nouns:
+        add_noun(sgForm, noun_irr_sg_lex(rel, role))
+        add_noun(plForm, noun_irr_plu_lex(rel, role))
+    for form, rel, role in mass_nouns:
+        add_noun(form, noun_mass_lex(rel, role))
 

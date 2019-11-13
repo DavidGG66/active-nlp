@@ -4,14 +4,13 @@
 #
 
 from functools import reduce
-from src.morph.fst import FST, State, Arc, ReadFST, AndFST, OrFST, NonDetOrFST
+from src.morph.fst import FST, State, Arc, read_fst, and_fst, or_fst, non_det_or_fst
 
 vowel = "aeiouy"
-vowelNoY = "aeiou"
+vowel_no_y = "aeiou"
 consonant = "bcdfghjklmnpqrstvwxz"
-nonDoubleCons = "hjqwx"
 
-allButE = "abcdfghijklmnopqrstuvwxyz"
+all_but_e = "abcdfghijklmnopqrstuvwxyz"
 
 test1_data = {
     "finals": {0: {"preVowel"},
@@ -61,30 +60,30 @@ test4_data = {
     "states": {
         0: {0: "degioy"}}}
 
-test_deleteFinalE = ReadFST(test1_data)
-test_doubleFinalCons = ReadFST(test2_data)
-test_pVyToI = ReadFST(test3_data)
+test_delete_final_e = read_fst(test1_data)
+test_double_final_cons = read_fst(test2_data)
+test_pv_y_to_i = read_fst(test3_data)
 
-test_free = ReadFST(test4_data)
+test_free = read_fst(test4_data)
 
 
-deleteFinalE_data = {
+delete_final_e_data = {
     "finals": {
         0: {"preVowel"},
         2: {"preVowel"}},
     "next": 3,
     "states": {
-        0: {0: allButE,
+        0: {0: all_but_e,
             1: "e",
             2: ("e", "epsilon")},
-        1: {0: allButE,
+        1: {0: all_but_e,
             1: "e",
             2: ("e", "epsilon")},
         2: {}}}
 
-deleteFinalE = ReadFST(deleteFinalE_data)
+delete_final_e = read_fst(delete_final_e_data)
 
-pVyToI_data = {
+pv_y_to_i_data = {
     "finals": {
         0: {"preVowel"},
         1: {"preVowel"},
@@ -92,7 +91,7 @@ pVyToI_data = {
     "next": 4,
     "states": {
         0: {0: consonant,
-            1: vowelNoY,
+            1: vowel_no_y,
             2: "y",
             3: ("y", "i")},
         1: {0: consonant,
@@ -101,9 +100,9 @@ pVyToI_data = {
             1: vowel},
         3: {}}}
 
-pVyToI = ReadFST(pVyToI_data)
+pv_y_to_i = read_fst(pv_y_to_i_data)
 
-doubleFinalCons_data = {
+double_final_cons_data = {
     "finals": {
         1: {"preVowel"},
         2: {"preVowel"},
@@ -153,9 +152,9 @@ doubleFinalCons_data = {
         19: {20: ("epsilon", "z")},
         20: {}}}
 
-doubleFinalCons = ReadFST(doubleFinalCons_data)
+double_final_cons = read_fst(double_final_cons_data)
 
-tEsibEnd_data = {
+t_e_sib_end_data = {
     "finals": {
         1: {"takesEs"}},
     "next": 3,
@@ -170,9 +169,9 @@ tEsibEnd_data = {
             1: "hsxz",
             2: "c"}}}
 
-tEsibEnd = ReadFST(tEsibEnd_data)
+t_e_sib_end = read_fst(t_e_sib_end_data)
 
-tEyToI_data = {
+t_e_y_to_i_data = {
     "finals": {
         2: {"takesEs"}},
     "next": 3,
@@ -184,9 +183,9 @@ tEyToI_data = {
             1: "aeiou"},
         2: {}}}
 
-tEyToI = ReadFST(tEyToI_data)
+t_e_y_to_i = read_fst(t_e_y_to_i_data)
 
-endsCCV_data = {
+ends_ccv_data = {
     "finals": {
         3: {"takesEs"}},
     "next": 4,
@@ -200,9 +199,9 @@ endsCCV_data = {
             3: "aiou"},
         3: {}}}
 
-endsCCV = ReadFST(endsCCV_data)
+ends_ccv = read_fst(ends_ccv_data)
 
-tSsibEnd_data = {
+t_s_sib_end_data = {
     "finals": {
         0: {"takesS"},
         2: {"takesS"}},
@@ -218,9 +217,9 @@ tSsibEnd_data = {
             1: "hsxz",
             2: "c"}}}
 
-tSsibEnd = ReadFST(tSsibEnd_data)
+t_s_sib_end = read_fst(t_s_sib_end_data)
 
-tSyToI_data = {
+t_s_y_to_i_data = {
     "finals": {
         0: {"takesS"},
         1: {"takesS"}},
@@ -234,7 +233,7 @@ tSyToI_data = {
         2: {0: "bcdfghjklmnpqrstvwxz",
             1: "aeiouy"}}}
 
-tSyToI = ReadFST(tSyToI_data)
+t_s_y_to_i = read_fst(t_s_y_to_i_data)
 
 free_data = {
     "finals": {0: {"free"}},
@@ -242,34 +241,44 @@ free_data = {
     "states": {
         0: {0: "abcdefghijklmnopqrstuvwxyz"}}}
 
-free = ReadFST(free_data)
+free = read_fst(free_data)
 
-preVowel = reduce(AndFST, [
-    deleteFinalE,
-    pVyToI,
-    doubleFinalCons])
+punc_data = {
+    "finals": {1: {"punc"}},
+    "next": 2,
+    "states": {
+        0: {1: " .,?!:;-'\""},
+        1: {1: ("epsilon", " ")}}}
 
-takesEs = reduce(OrFST, [
-    tEsibEnd,
-    tEyToI,
-    endsCCV])
+punc = read_fst(punc_data)
 
-takesS = reduce(AndFST, [
-    tSyToI,
-    tSsibEnd])
+pre_vowel = reduce(and_fst, [
+    delete_final_e,
+    pv_y_to_i,
+    double_final_cons])
+
+takes_es = reduce(or_fst, [
+    t_e_sib_end,
+    t_e_y_to_i,
+    ends_ccv])
+
+takes_s = reduce(and_fst, [
+    t_s_y_to_i,
+    t_s_sib_end])
 
 full = reduce(
-    NonDetOrFST,
+    non_det_or_fst,
     [
         free,
-        preVowel,
-        takesEs,
-        takesS])
+        pre_vowel,
+        takes_es,
+        takes_s,
+        punc])
 
 det_full = reduce(
-    OrFST,
+    or_fst,
     [
         free,
-        preVowel,
-        takesEs,
-        takesS])
+        pre_vowel,
+        takes_es,
+        takes_s])

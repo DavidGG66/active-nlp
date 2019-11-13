@@ -3,16 +3,16 @@
 # src.morph.fst
 #
 
-from src.common.utils import firstFilter
+from src.common.utils import first_filter
 
 class Arc():
     """ An arc, consisting of target and labels """
     
     def __init__(self, target, label):
         self.target = target
-        self.AddLabel(label)
+        self.add_label(label)
 
-    def MakeCopy(self):
+    def make_copy(self):
         ret = Arc(self.target, None)
         if hasattr(self, "units"):
             ret.units = set(self.units)
@@ -21,21 +21,21 @@ class Arc():
 
         return ret
 
-    def Units(self):
+    def get_units(self):
         if hasattr(self, "units"):
             return self.units
         else:
             return set()
 
 
-    def Pairs(self):
+    def get_pairs(self):
         if hasattr(self, "pairs"):
             return self.pairs
         else:
             return set()
 
         
-    def AddUnit(self, s):
+    def add_unit(self, s):
         """ Add a string or set of strings to the label units """
         if type(s) is str:
             s = {s}
@@ -44,24 +44,24 @@ class Arc():
         else:
             self.units = s
 
-    def AddPair(self, p):
+    def add_pair(self, p):
         if hasattr(self, "pairs"):
             self.pairs.add(p)
         else:
             self.pairs = {p}
             
-    def AddLabel(self, label):
+    def add_label(self, label):
         """ Add a new label to any existing labels on an arc """
         if type(label) is str:
             if label[0] == "_" and label[-1] == "_":
-                self.AddUnit(label)
+                self.add_unit(label)
             else:
-                self.AddUnit(set(label))
+                self.add_unit(set(label))
         elif type(label) is tuple:
-            self.AddPair(label)
+            self.add_pair(label)
             
 
-    def ToPrintFromState(self):
+    def to_print_from_state(self):
         label = []
         if hasattr(self, "units"):
             label.append(''.join(self.units))
@@ -69,11 +69,11 @@ class Arc():
             label.append(self.pairs)
         return label
 
-    def ToPrint(self):
+    def to_print(self):
         
         return {
             "target": self.target,
-            "label": self.ToPrintFromState()}
+            "label": self.to_print_from_state()}
 
 
 class State():
@@ -84,19 +84,19 @@ class State():
     """
 
     def __init__(self):
-        self.arcMap = {}
+        self.arc_map = {}
 
-    def AddArc(self, target, label):
-        if target in self.arcMap:
-            self.arcMap[target].AddLabel(label)
+    def add_arc(self, target, label):
+        if target in self.arc_map:
+            self.arc_map[target].add_label(label)
         else:
-            self.arcMap[target] = Arc(target, label)
+            self.arc_map[target] = Arc(target, label)
 
-    def ArcList(self):
-        return self.arcMap.items()
+    def arc_list(self):
+        return self.arc_map.items()
     
-    def ToPrint(self):
-        return {k:v.ToPrintFromState() for k,v in self.arcMap.items()}
+    def to_print(self):
+        return {k:v.to_print_from_state() for k,v in self.arc_map.items()}
 
     
 class FST():
@@ -107,46 +107,46 @@ class FST():
         self.next = 1
         self.states = {0: State()}
 
-    def ToPrint(self):
+    def to_print(self):
         return {
             "finals": self.finals,
-            "states": {k:v.ToPrint() for k,v in self.states.items()}}
+            "states": {k:v.to_print() for k,v in self.states.items()}}
 
-    def AddState(self, source):
+    def add_state(self, source):
         if source not in self.states:
             self.states[source] = State()
             
-    def AddArc(self, source, target, label):
+    def add_arc(self, source, target, label):
         """ Add an arc with the given source, target & label """
         if source in self.states:
-            self.states[source].AddArc(target, label)
+            self.states[source].add_arc(target, label)
         else:
             state = State()
-            state.AddArc(target, label)
+            state.add_arc(target, label)
             self.states[source] = state
 
         if target not in self.states:
             self.states[target] = State()
 
-    def CopyArc(self, source, target, arc):
+    def copy_arc(self, source, target, arc):
         """ Add an arc with all the labels from a given arc """
-        for letter in arc.Units():
-            self.AddArc(source, target, letter)
-        for pair in arc.Pairs():
-            self.AddArc(source, target, pair)
+        for letter in arc.get_units():
+            self.add_arc(source, target, letter)
+        for pair in arc.get_pairs():
+            self.add_arc(source, target, pair)
 
-    def ArcList(self, state):
-        return self.states[state].ArcList()
+    def arc_list(self, state):
+        return self.states[state].arc_list()
     
 
-def WordFST(word, tag):
+def word_fst(word, tag):
     """ Make an FST that recognizes a single word with the given tag """
     ret = FST()
     source = ret.initial
     for letter in word:
         target = ret.next
         ret.next += 1
-        ret.AddArc(source, target, letter)
+        ret.add_arc(source, target, letter)
         source += 1
 
     ret.finals = {source: {tag}}
@@ -156,22 +156,22 @@ def WordFST(word, tag):
 class StateTable():
 
     def __init__(self):
-        self.nextState = 0
-        self.stateMap = {}
+        self.next_state = 0
+        self.state_map = {}
 
 
     def __contains__(self, state):
-        return state in self.stateMap
+        return state in self.state_map
 
     
-    def findComboState(self, agendum):
-        if agendum not in self.stateMap:
-            self.stateMap[agendum] = self.nextState
-            self.nextState += 1
-        return self.stateMap[agendum]
+    def find_combo_state(self, agendum):
+        if agendum not in self.state_map:
+            self.state_map[agendum] = self.next_state
+            self.next_state += 1
+        return self.state_map[agendum]
 
 
-def ReadFST(fst_data):
+def read_fst(fst_data):
     ret = FST()
     for k,v in fst_data.items():
         if k == "finals":
@@ -183,101 +183,84 @@ def ReadFST(fst_data):
                 if source not in ret.states:
                     ret.states[source] = State()
                 for target, label in arc.items():
-                    ret.AddArc(source, target, label)
-
+                    ret.add_arc(source, target, label)
     return ret
 
 
-def AddAgendum(agenda, agendum, stateTable):
+def add_agendum(agenda, agendum, state_table):
     """ Add a new agenda item, as long as it hasn't already been seen """
-    if agendum not in stateTable:
+    if agendum not in state_table:
         agenda.append(agendum)
 
         
-def AddEpsArcs(arcList, state, fst, source, stateTable, agenda, epsilon1):
+def add_eps_arcs(eps_arc_list, other_arc_list, fst, source, state_table, agenda, epsilon1):
     """ Add arcs following surface epsilon transitions to the new fst """
-    for target, arc in arcList:
-        epsPairs = list(filter(lambda x: x[1] == 'epsilon', arc.pairs))
-        if epsPairs:
-            if epsilon1:
-                newTarget = (target, state)
-            else:
-                newTarget = (state, target)
-            AddAgendum(agenda, newTarget, stateTable)
-            comboTarget = stateTable.findComboState(newTarget)
-            fst.AddState(comboTarget)
-            for label in epsPairs:
-                fst.AddArc(source, comboTarget, label)
-
-
-def NewAddEpsArcs(epsArcList, otherArcList, fst, source, stateTable, agenda, epsilon1):
-    """ Add arcs following surface epsilon transitions to the new fst """
-    for epsTarget, epsArc in epsArcList:
-        epsPairs = list(filter(lambda x: x[1] == 'epsilon', epsArc.Pairs()))
-        if epsPairs:
-            for otherTarget, otherArc in otherArcList:
-                if otherArc.Units():
-                    otherTarget = otherArc.target
+    for eps_target, eps_arc in eps_arc_list:
+        eps_pairs = list(filter(lambda x: x[1] == 'epsilon', eps_arc.get_pairs()))
+        if eps_pairs:
+            for other_target, other_arc in other_arc_list:
+                if other_arc.get_units():
+                    other_target = other_arc.target
                     if epsilon1:
-                        newTarget = (epsTarget, otherTarget)
+                        new_target = (eps_target, other_target)
                     else:
-                        newTarget = (otherTarget, epsTarget)
-                    AddAgendum(agenda, newTarget, stateTable)
-                    comboTarget = stateTable.findComboState(newTarget)
-                    fst.AddState(comboTarget)
-                    for label in epsPairs:
-                        fst.AddArc(source, comboTarget, label)
+                        new_target = (other_target, eps_target)
+                    add_agendum(agenda, new_target, state_table)
+                    combo_target = state_table.find_combo_state(new_target)
+                    fst.add_state(combo_target)
+                    for label in eps_pairs:
+                        fst.add_arc(source, combo_target, label)
 
         
-def GetMatchPairs(arc1, arc2):
+def get_match_pairs(arc1, arc2):
     """ Get pairs where the surface from one matches a string from another """
     ret = {}
-    ret.update(filter(lambda x: x[1] in arc2.Units(), arc1.Pairs()))
-    ret.update(filter(lambda x: x[1] in arc1.Units(), arc2.Pairs()))
+    ret.update(filter(lambda x: x[1] in arc2.get_units(), arc1.get_pairs()))
+    ret.update(filter(lambda x: x[1] in arc1.get_units(), arc2.get_pairs()))
     return ret
 
 
-def NewTarget(fst, target1, target2, agenda, stateTable):
+def new_target(fst, target1, target2, agenda, state_table):
     """ Make a new target state and add it to the fst and agenda """
 
-    newAgendum = (target1, target2)
-    AddAgendum(agenda, newAgendum, stateTable)
-    comboTarget = stateTable.findComboState(newAgendum)
-    fst.AddState(comboTarget)
+    new_agendum = (target1, target2)
+    add_agendum(agenda, new_agendum, state_table)
+    combo_target = state_table.find_combo_state(new_agendum)
+    fst.add_state(combo_target)
 
-    return comboTarget
+    return combo_target
 
 
-def AddAndArcs(fst, source, target1, arc1, target2, arc2, agenda, stateTable):
+def add_and_arcs(fst, source, target1, arc1, target2, arc2, agenda, state_table):
     """ Add arcs for the intersection of the two input arcs """
 
-    units = arc1.Units().intersection(arc2.Units())
-    pairs = GetMatchPairs(arc1, arc2)
+    units = arc1.get_units().intersection(arc2.get_units())
+    pairs = get_match_pairs(arc1, arc2)
 
     if units or pairs:
-        comboTarget = NewTarget(fst, target1, target2, agenda, stateTable)
+        combo_target = new_target(fst, target1, target2, agenda, state_table)
 
     if units:
-        fst.AddArc(source, comboTarget, ''.join(units))
+        fst.add_arc(source, combo_target, ''.join(units))
     if pairs:
         for pair in pairs:
-            fst.AddArc(source, comboTarget, pair)
+            fst.add_arc(source, combo_target, pair)
 
 
-def AddFinalAndStates(fst, fst1, fst2, stateTable):
+def add_final_and_states(fst, fst1, fst2, state_table):
     """ Set the accepting-state information for an anded fst """
-    for agendum, state in stateTable.stateMap.items():
+    for agendum, state in state_table.state_map.items():
         state1, state2 = agendum
         finals1 = fst1.finals.get(state1, set())
         finals2 = fst2.finals.get(state2, set())
-        newFinals = finals1.intersection(finals2)
-        if newFinals:
-            fst.finals[state] = newFinals
+        new_finals = finals1.intersection(finals2)
+        if new_finals:
+            fst.finals[state] = new_finals
 
 
-def AddFinalOrStates(fst, fst1, fst2, stateTable):
+def add_final_or_states(fst, fst1, fst2, state_table):
     """ Set the accepting-state information for an or-ed fst """
-    for agendum, state in stateTable.stateMap.items():
+    for agendum, state in state_table.state_map.items():
         state1, state2 = agendum
         finals1 = fst1.finals.get(state1, set())
         finals2 = fst2.finals.get(state2, set())
@@ -286,249 +269,219 @@ def AddFinalOrStates(fst, fst1, fst2, stateTable):
         elif state2 == None and finals1:
             fst.finals[state] = finals1
         else:
-            newFinals = finals1.union(finals2)
-            if newFinals:
-                fst.finals[state] = newFinals
+            new_finals = finals1.union(finals2)
+            if new_finals:
+                fst.finals[state] = new_finals
 
-def SinksByTags(fst):
+def sinks_by_tags(fst):
     states = fst.states.items()
-    sinkStates = filter(lambda x: not x[1].arcMap, states)
-    sinks = map(lambda x: x[0], sinkStates)
-    sinksByTag = []
+    sink_states = filter(lambda x: not x[1].arc_map, states)
+    sinks = map(lambda x: x[0], sink_states)
+    sinks_by_tag = []
 
     for sink in sinks:
         tags = fst.finals.get(sink, set())
-        groups = list(filter(lambda x: x["tags"] == tags, sinksByTag))
+        groups = list(filter(lambda x: x["tags"] == tags, sinks_by_tag))
         if groups:
             groups[0]["states"].add(sink)
         else:
-            sinksByTag.append({"tags": tags, "states": {sink}})
+            sinks_by_tag.append({"tags": tags, "states": {sink}})
 
-    return sinksByTag
+    return sinks_by_tag
 
 
-def DropSinks(fst, states, firstState):
+def drop_sinks(fst, states, first_state):
 
-    def nondup(dictItem):
-        state = dictItem[0]
-        return (not state in states) or state == firstState
+    def nondup(dict_item):
+        state = dict_item[0]
+        return (not state in states) or state == first_state
     
     fst.finals = dict(filter(nondup, fst.finals.items()))
     fst.states = dict(filter(nondup, fst.states.items()))
 
-def ZipSinks(fst):
+
+def zip_sinks(fst):
     """ Collapse identical states into a single state """
 
-    sinksByTag = SinksByTags(fst)
+    sinks_by_tag = sinks_by_tags(fst)
     
-    for sinkByTag in sinksByTag:
-        states = sinkByTag["states"]
-        firstState = min(states)
+    for sink_by_tag in sinks_by_tag:
+        states = sink_by_tag["states"]
+        first_state = min(states)
 
-        DropSinks(fst, states, firstState)
+        drop_sinks(fst, states, first_state)
 
         for state in fst.states.values():
-            delTargets = []
-            for target, arc in list(state.arcMap.items()):
-                if target in states and target != firstState:
-                    del state.arcMap[target]
-                    if not firstState in state.arcMap:
-                        state.arcMap[firstState] = Arc(firstState, None)
-                    if arc.Units():
-                        state.arcMap[firstState].AddLabel(''.join(arc.units))
-                    if arc.Pairs():
+            for target, arc in list(state.arc_map.items()):
+                if target in states and target != first_state:
+                    del state.arc_map[target]
+                    if not first_state in state.arc_map:
+                        state.arc_map[first_state] = Arc(first_state, None)
+                    if arc.get_units():
+                        state.arc_map[first_state].add_label(''.join(arc.units))
+                    if arc.get_pairs():
                         for pair in arc.pairs:
-                            state.arcMap[firstState].AddLabel(pair)
+                            state.arc_map[first_state].add_label(pair)
 
 
-def RemoveFruitlessArcs(fst):
+def remove_fruitless_arcs(fst):
     """ Remove epsilon arcs that point to non-accepting sinks """
 
-    def IsNonAcceptingSink(stateEntry):
-        stateNo, state = stateEntry
-        return not (stateNo in fst.finals or state.arcMap)
+    def is_non_accepting_sink(state_entry):
+        state_no, state = state_entry
+        return not (state_no in fst.finals or state.arc_map)
     
-    blackHoles = list(map(lambda x: x[0], filter(IsNonAcceptingSink, fst.states.items())))
+    black_holes = list(map(lambda x: x[0], filter(is_non_accepting_sink, fst.states.items())))
 
-    for sourceNo, sourceState in fst.states.items():
-        arcs = sourceState.arcMap
-        for targetNo, targetArc in list(arcs.items()):
-            if targetArc.target in blackHoles:
-                epsPairs = set(filter(lambda x: x[1] == 'epsilon', targetArc.pairs))
-                targetArc.pairs -= epsPairs
-                if not (targetArc.Pairs() or targetArc.Units()):
-                    if targetNo in arcs:
-                        del arcs[targetNo]
+    for source_state in fst.states.values():
+        arcs = source_state.arc_map
+        for target_no, target_arc in list(arcs.items()):
+            if target_arc.target in black_holes:
+                eps_pairs = set(filter(lambda x: x[1] == 'epsilon', target_arc.pairs))
+                target_arc.pairs -= eps_pairs
+                if not (target_arc.get_pairs() or target_arc.get_units()):
+                    if target_no in arcs:
+                        del arcs[target_no]
                     
     
-def InitFstOp(fst1, fst2):
-    """ The initial result fst, agenda and stateTable for an FST operation """
+def init_fst_op(fst1, fst2):
+    """ The initial result fst, agenda and state_table for an FST operation """
     ret = FST()
-    stateTable = StateTable()
-    newInitial = (fst1.initial, fst2.initial)
-    ret.initial = stateTable.findComboState(newInitial)
-    agenda = [newInitial]
+    state_table = StateTable()
+    new_initial = (fst1.initial, fst2.initial)
+    ret.initial = state_table.find_combo_state(new_initial)
+    agenda = [new_initial]
 
-    return ret, agenda, stateTable
+    return ret, agenda, state_table
 
-def AndFST(fst1, fst2):
+
+def and_fst(fst1, fst2):
     """ Return a new FST, running which would be the same as running
         the two given FSTs in parallel """
 
-    ret, agenda, stateTable = InitFstOp(fst1, fst2)
+    ret, agenda, state_table = init_fst_op(fst1, fst2)
     
     while agenda:
         agendum = agenda.pop()
         state1, state2 = agendum
-        source = stateTable.findComboState(agendum)
+        source = state_table.find_combo_state(agendum)
 
-        arcList1 = fst1.ArcList(state1)
-        arcList2 = fst2.ArcList(state2)
-
-        #
-        # Add the arcs for epsilon transitions
-        #
-        if arcList2:
-            NewAddEpsArcs(arcList1, arcList2, ret, source, stateTable, agenda, True)
-        if arcList1:
-            NewAddEpsArcs(arcList2, arcList1, ret, source, stateTable, agenda, False)
-
-        for target1, arc1 in arcList1:
-            for target2, arc2 in arcList2:
-                AddAndArcs(ret, source, target1, arc1, target2, arc2, agenda, stateTable)
-
-    ret.next = stateTable.nextState
-    AddFinalAndStates(ret, fst1, fst2, stateTable)
-    RemoveFruitlessArcs(ret)
-    ZipSinks(ret)
-    
-    return ret
-
-
-def AndFST1(fst1, fst2):
-    """ Return a new FST, running which would be the same as running
-        the two given FSTs in parallel """
-
-    ret, agenda, stateTable = InitFstOp(fst1, fst2)
-    
-    while agenda:
-        agendum = agenda.pop()
-        state1, state2 = agendum
-        source = stateTable.findComboState(agendum)
-
-        arcList1 = fst1.ArcList(state1)
-        arcList2 = fst2.ArcList(state2)
+        arc_list1 = fst1.arc_list(state1)
+        arc_list2 = fst2.arc_list(state2)
 
         #
         # Add the arcs for epsilon transitions
         #
-        if arcList2 or True:
-            AddEpsArcs(arcList1, state2, ret, source, stateTable, agenda, True)
-        if arcList1 or True:
-            AddEpsArcs(arcList2, state1, ret, source, stateTable, agenda, False)
+        if arc_list2:
+            add_eps_arcs(arc_list1, arc_list2, ret, source, state_table, agenda, True)
+        if arc_list1:
+            add_eps_arcs(arc_list2, arc_list1, ret, source, state_table, agenda, False)
 
-        for target1, arc1 in arcList1:
-            for target2, arc2 in arcList2:
-                AddAndArcs(ret, source, target1, arc1, target2, arc2, agenda, stateTable)
+        for target1, arc1 in arc_list1:
+            for target2, arc2 in arc_list2:
+                add_and_arcs(ret, source, target1, arc1, target2, arc2, agenda, state_table)
 
-    AddFinalAndStates(ret, fst1, fst2, stateTable)
+    ret.next = state_table.next_state
+    add_final_and_states(ret, fst1, fst2, state_table)
+    remove_fruitless_arcs(ret)
+    zip_sinks(ret)
     
     return ret
 
 
-def CopyArcList(arcList):
+def copy_arc_list(arc_list):
     """ return an ArcList whose arcs are copies of those in the original """
     ret = {}
-    for target, arc in arcList:
-        ret[target] = arc.MakeCopy()
+    for target, arc in arc_list:
+        ret[target] = arc.make_copy()
 
     return ret
 
-def AddOrArcs(fst, source, target1, arc1, target2, arc2, arcsToDo1, arcsToDo2, agenda, stateTable):
+def add_or_arcs(fst, source, target1, arc1, target2, arc2, arcs_to_do1, arcs_to_do2, agenda, state_table):
     """ If the labels of the arcs intersect, Add a new arc """
 
-    units = arc1.Units().intersection(arc2.Units())
-    pairs = arc1.Pairs().intersection(arc2.Pairs())
+    units = arc1.get_units().intersection(arc2.get_units())
+    pairs = arc1.get_pairs().intersection(arc2.get_pairs())
 
     if units or pairs:
-        comboTarget = NewTarget(fst, target1, target2, agenda, stateTable)
+        combo_target = new_target(fst, target1, target2, agenda, state_table)
 
     if units:
-        fst.AddArc(source, comboTarget, ''.join(units))
-        arcsToDo1[target1].units -= units
-        arcsToDo2[target2].units -= units
+        fst.add_arc(source, combo_target, ''.join(units))
+        arcs_to_do1[target1].units -= units
+        arcs_to_do2[target2].units -= units
     if pairs:
         for pair in pairs:
-            fst.AddArc(source, comboTarget, pair)
-        arcsToDo1[target1].pairs -= pairs
-        arcsToDo2[target2].pairs -= pairs
+            fst.add_arc(source, combo_target, pair)
+        arcs_to_do1[target1].pairs -= pairs
+        arcs_to_do2[target2].pairs -= pairs
         
 
-def AddIdioArcs(fst, source, target, arc, agenda, stateTable, isFst1):
+def add_idio_arcs(fst, source, target, arc, agenda, state_table, is_fst1):
     """ Add an arc that only exists in one source fst """
 
-    if arc.Units() or arc.Pairs():
-        if isFst1:
-            comboTarget = NewTarget(fst, target, None, agenda, stateTable)
+    if arc.get_units() or arc.get_pairs():
+        if is_fst1:
+            combo_target = new_target(fst, target, None, agenda, state_table)
         else:
-            comboTarget = NewTarget(fst, None, target, agenda, stateTable)
+            combo_target = new_target(fst, None, target, agenda, state_table)
 
-        fst.CopyArc(source, comboTarget, arc)
+        fst.copy_arc(source, combo_target, arc)
                                 
     
-def OrFST(fst1, fst2):
+def or_fst(fst1, fst2):
     """ Return a new FST accepting all the strings accepted by either input """
 
-    ret, agenda, stateTable = InitFstOp(fst1, fst2)
+    ret, agenda, state_table = init_fst_op(fst1, fst2)
 
     while agenda:
         agendum = agenda.pop()
         state1, state2 = agendum
-        source = stateTable.findComboState(agendum)
+        source = state_table.find_combo_state(agendum)
 
         if state1 == None:
-            for target, arc in CopyArcList(fst2.ArcList(state2)).items():
-                AddIdioArcs(ret, source, target, arc, agenda, stateTable, False)
+            for target, arc in copy_arc_list(fst2.arc_list(state2)).items():
+                add_idio_arcs(ret, source, target, arc, agenda, state_table, False)
         elif state2 == None:
-            for target, arc in CopyArcList(fst1.ArcList(state1)).items():
-                AddIdioArcs(ret, source, target, arc, agenda, stateTable, True)
+            for target, arc in copy_arc_list(fst1.arc_list(state1)).items():
+                add_idio_arcs(ret, source, target, arc, agenda, state_table, True)
         else:
-            arcList1 = fst1.ArcList(state1)
-            arcList2 = fst2.ArcList(state2)
+            arc_list1 = fst1.arc_list(state1)
+            arc_list2 = fst2.arc_list(state2)
 
-            arcsToDo1 = CopyArcList(arcList1)
-            arcsToDo2 = CopyArcList(arcList2)
+            arcs_to_do1 = copy_arc_list(arc_list1)
+            arcs_to_do2 = copy_arc_list(arc_list2)
 
-            for target1, arc1 in arcList1:
-                for target2, arc2 in arcList2:
-                    AddOrArcs(ret, source, target1, arc1, target2, arc2, arcsToDo1, arcsToDo2, agenda, stateTable)
+            for target1, arc1 in arc_list1:
+                for target2, arc2 in arc_list2:
+                    add_or_arcs(ret, source, target1, arc1, target2, arc2, arcs_to_do1, arcs_to_do2, agenda, state_table)
 
-            for target, arc in arcsToDo1.items():
-                AddIdioArcs(ret, source, target, arc, agenda, stateTable, True)
+            for target, arc in arcs_to_do1.items():
+                add_idio_arcs(ret, source, target, arc, agenda, state_table, True)
 
-            for target, arc in arcsToDo2.items():
-                AddIdioArcs(ret, source, target, arc, agenda, stateTable, False)
+            for target, arc in arcs_to_do2.items():
+                add_idio_arcs(ret, source, target, arc, agenda, state_table, False)
 
-        ret.next = stateTable.nextState
-        AddFinalOrStates(ret, fst1, fst2, stateTable)
+        ret.next = state_table.next_state
+        add_final_or_states(ret, fst1, fst2, state_table)
         
     return ret
 
 
-def ExtendFSA(fst, word, tags):
+def extend_fsa(fst, word, tags):
     """ Assuming fst is a NFSA, OR a word onto it with the given tags """
     if type(tags) is str:
         tags = {tags}
     source = fst.initial
     for letter in word:
-        arcs = fst.states[source].arcMap
-        matchArc = firstFilter(lambda x: letter in x[1].Units(), arcs.items())
-        if matchArc:
-            source = matchArc[0]
+        arcs = fst.states[source].arc_map
+        match_arc = first_filter(lambda x: letter in x[1].get_units(), arcs.items())
+        if match_arc:
+            source = match_arc[0]
         else:
             target = fst.next
             fst.next += 1
-            fst.AddArc(source, target, letter)
+            fst.add_arc(source, target, letter)
             source = target
 
     if source in fst.finals:
@@ -537,63 +490,64 @@ def ExtendFSA(fst, word, tags):
         fst.finals[source] = tags
     
 
-def UnaryCombo(stateNum, stateTable, isFst1):
-    if isFst1:
-        pair = (stateNum, None)
+def unary_combo(state_num, state_table, is_fst1):
+    if is_fst1:
+        pair = (state_num, None)
     else:
-        pair = (None, stateNum)
-    return stateTable.findComboState(pair)
-        
-def CopyFstInto(targetFst, sourceFst, stateTable, isFst1):
+        pair = (None, state_num)
+    return state_table.find_combo_state(pair)
+
+
+def copy_fst_into(target_fst, source_fst, state_table, is_fst1):
     """ Copy the arcs and finals from one FST to another """
-    for sourceNum, state in sourceFst.states.items():
-        newSource = UnaryCombo(sourceNum, stateTable, isFst1)
-        targetFst.states[newSource] = State()
-        for targetNum, arc in state.arcMap.items():
-            newTarget = UnaryCombo(targetNum, stateTable, isFst1)
-            targetFst.CopyArc(newSource, newTarget, arc)
+    for source_num, state in source_fst.states.items():
+        new_source = unary_combo(source_num, state_table, is_fst1)
+        target_fst.states[new_source] = State()
+        for target_num, arc in state.arc_map.items():
+            new_target = unary_combo(target_num, state_table, is_fst1)
+            target_fst.copy_arc(new_source, new_target, arc)
 
-    for finalNum, tags in sourceFst.finals.items():
-        newFinal = UnaryCombo(finalNum, stateTable, isFst1)
-        targetFst.finals[newFinal] = set(tags)
+    for final_num, tags in source_fst.finals.items():
+        new_final = unary_combo(final_num, state_table, is_fst1)
+        target_fst.finals[new_final] = set(tags)
 
 
-def FixInitialLoop(fst):
+def fix_initial_loop(fst):
     """ Make sure the FST does not contain a self-loop on its initial state """
-    initialNum = fst.initial
-    initialArcs = fst.states[initialNum].arcMap.values()
-    if any(map(lambda v: v.target == initialNum, initialArcs)):
-        newInitial = fst.next
+    initial_num = fst.initial
+    initial_arcs = fst.states[initial_num].arc_map.values()
+    if any(map(lambda v: v.target == initial_num, initial_arcs)):
+        new_initial = fst.next
         fst.next += 1
-        fst.states[newInitial] = State()
-        fst.initial = newInitial
-        if fst.finals[initialNum]:
-            fst.finals[newInitial] = set(fst.finals[initialNum])
-        for arc in initialArcs:
-            if arc.target == initialNum:
-                fst.CopyArc(newInitial, initialNum, arc)
+        fst.states[new_initial] = State()
+        fst.initial = new_initial
+        if fst.finals[initial_num]:
+            fst.finals[new_initial] = set(fst.finals[initial_num])
+        for arc in initial_arcs:
+            if arc.target == initial_num:
+                fst.copy_arc(new_initial, initial_num, arc)
             else:
-                fst.CopyArc(newInitial, arc.target, arc)
+                fst.copy_arc(new_initial, arc.target, arc)
 
                 
-def NonDetOrFST(fst1, fst2):
+def non_det_or_fst(fst1, fst2):
     """ The same as OrFST, but allow more non-determinism """
 
     ret = FST()
-    stateTable = StateTable()
+    state_table = StateTable()
 
-    FixInitialLoop(fst1)
-    ret.initial = UnaryCombo(fst1.initial, stateTable, True)
-    CopyFstInto(ret, fst1, stateTable, True)
-    CopyFstInto(ret, fst2, stateTable, False)
+    fix_initial_loop(fst1)
+    ret.initial = unary_combo(fst1.initial, state_table, True)
+    copy_fst_into(ret, fst1, state_table, True)
+    copy_fst_into(ret, fst2, state_table, False)
 
-    initial2Num = fst2.initial
-    initial2State = fst2.states[initial2Num]
-    for targetNum, arc in initial2State.arcMap.items():
-        newTarget = stateTable.findComboState((None, targetNum))
-        ret.CopyArc(0, newTarget, arc)
+    initial2_num = fst2.initial
+    initial2_state = fst2.states[initial2_num]
+    for target_num, arc in initial2_state.arc_map.items():
+        new_target = state_table.find_combo_state((None, target_num))
+        ret.copy_arc(0, new_target, arc)
 
-    ret.next = stateTable.nextState
+    ret.next = state_table.next_state
     return ret
 
 class AzAgendum():
@@ -604,62 +558,84 @@ class AzAgendum():
         self.result = result
 
 
-def AnalyzeEpsArcs(fst, agenda):
+def analyze_eps_arcs(fst, agenda):
 
     ret = list(agenda)
 
     while agenda:
-        newAgenda = []
+        new_agenda = []
         for agendum in agenda:
             state = agendum[0]
             results = list(agendum[1])
-            for target, arc in fst.states[state].arcMap.items():
-                for pair in arc.Pairs():
+            for target, arc in fst.states[state].arc_map.items():
+                for pair in arc.get_pairs():
                     if pair[1] == 'epsilon':
                         results = list(agendum[1])
                         results.append(pair[0])
-                        newAgenda.append((target, results))
-        ret.extend(newAgenda)
-        agenda = newAgenda
+                        new_agenda.append((target, results))
+        ret.extend(new_agenda)
+        agenda = new_agenda
 
     return ret
 
         
-def AnalyzeCharacter(fst, state, char):
+def analyze_character(fst, state, char):
     """ Analyze a single letter with an FST """
 
     ret = []
-    for target, arc in fst.states[state].arcMap.items():
-        if char in arc.Units():
+    for target, arc in fst.states[state].arc_map.items():
+        if char in arc.get_units():
             ret.append((target, [char]))
-        for pair in arc.Pairs():
+        for pair in arc.get_pairs():
             if char == pair[1]:
-                newChar = pair[0]
+                new_char = pair[0]
                 if newChar == 'epsilon':
                     ret.append((target, []))
                 else:
-                    ret.append((target, [newChar]))
+                    ret.append((target, [new_char]))
 
-    return AnalyzeEpsArcs(fst, ret)
+    return analyze_eps_arcs(fst, ret)
 
-def Analyze(fst, utt):
+def analyze_fsa_character(fsa, state, char):
+    """ Analyze a single letter with an FSA """
+    ret = []
+    for target, arc in fsa.states[state].arc_map.items():
+        if char in arc.get_units():
+            ret.append(target)
+    return ret
+
+
+def analyze_fsa_characters(fsa, state, chars):
+    """ Analyze a sequence of characters, return the list of resulting states """
+    agenda = [state]
+    while agenda and chars:
+        char = chars[0]
+        chars = chars[1:]
+        new_agenda = []
+        for source in agenda:
+            new_agenda.extend(analyze_fsa_character(fsa, source, char))
+        agenda = new_agenda
+    return agenda
+
+    
+def analyze(fst, utt):
     """ Transduce a string from surface to deep """
     agenda = [AzAgendum(fst.initial, "")]
 
-    uttToGo = utt
+    utt_to_go = utt
     seen = 0
 
-    while uttToGo and agenda:
-        char = uttToGo[0]
-        uttToGo = uttToGo[1:]
+    while utt_to_go and agenda:
+        char = utt_to_go[0]
+        utt_to_go = utt_to_go[1:]
 
-        newAgenda = []
+        new_agenda = []
         for agendum in agenda:
             seen += 1
-            updates = AnalyzeCharacter(fst, agendum.state, char)
+            updates = analyze_character(fst, agendum.state, char)
             for update in updates:
-                newAgenda.append(AzAgendum(update[0], agendum.result + "".join(update[1])))
-        agenda = newAgenda
+                new_agenda.append(AzAgendum(update[0], agendum.result + "".join(update[1])))
+        agenda = new_agenda
 
     ret = {}
 

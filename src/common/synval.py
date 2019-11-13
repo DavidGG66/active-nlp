@@ -1,13 +1,11 @@
 # Syntactic classes
 
-import pprint
-
 class SynValue():
 
-    def __init__(self, cat, isLexical):
+    def __init__(self, cat, is_lexical):
 
         self.cat = cat
-        self.isLexical = isLexical
+        self.is_lexical = is_lexical
         self.features = {}
 
 
@@ -26,16 +24,16 @@ class SynValue():
         return SynValue(self.cat, self.isLexical, self.features.copy())
 
 
-    def ToPrint(self):
+    def to_print(self):
 
         return (self.cat, self.features)
     
 
-    def LexSyn(cat):
+    def lex_syn(cat):
 
         return SynValue(cat, True)
 
 
-    def PhraseSyn(cat):
+    def phrase_syn(cat):
 
         return SynValue(cat, False)

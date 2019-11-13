@@ -1,15 +1,15 @@
 # Determiner lexicon
 
-import src.common.synval as syn
-import src.common.semval as sem
-import src.common.synsem as ss
+from src.common.synval import SynValue
+from src.common.semval import Relspec, SemValue
+from src.common.synsem import SynSem
 
-from src.lexicon.core import AddLex
+from src.lexicon.core import add_lex
 
-def DetLex(sg, plu, df, width):
+def det_lex(sg, plu, df, width):
 
-    synVal = syn.SynValue("DetLex", True)
-    synVal["agr"] = {
+    syn_val = SynValue("DetLex", True)
+    syn_val["agr"] = {
         "sg": sg,
         "plu": plu}
 
@@ -25,62 +25,62 @@ def DetLex(sg, plu, df, width):
         "root": "x2",
         "quant": "x3"}
 
-    relspec = sem.Relspec("Quant", roles)
-    semVal = sem.SemValue()
-    semVal.AddRelspec(relspec, {}, hooks)
+    relspec = Relspec("Quant", roles)
+    sem_val = SemValue()
+    sem_val.add_relspec(relspec, {}, hooks)
 
-    return synVal, semVal
+    return syn_val, sem_val
 
 
-def DetFixedLex(sg, plu, df, width, rel, val):
+def det_fixed_lex(sg, plu, df, width, rel, val):
 
-    synVal, semVal = DetLex(sg, plu, df, width)
-    synVal["quant"] = "fixed"
+    syn_val, sem_val = det_lex(sg, plu, df, width)
+    syn_val["quant"] = "fixed"
 
     roles = {
         "NODE": "x3",
         "VAL": 1}
     
-    relspec = sem.Relspec("AbsVal", roles)
-    semVal.AddRelspec(relspec, {"x3": "quant"}, {})
+    relspec = Relspec("AbsVal", roles)
+    sem_val.add_relspec(relspec, {"x3": "quant"}, {})
 
-    return ss.SynSem(synVal, semVal)
-
-
-def DetRelLex(sg, plu, width, val):
-
-    return DetFixedLex(sg, plu, "indef", width, "RelVal", val)
+    return SynSem(syn_val, sem_val)
 
 
-def DetOpenLex(sg, plu, df, width):
+def det_rel_lex(sg, plu, width, val):
 
-    synVal, semVal = DetLex(sg, plu, df, width)
-    synVal["quant"] = "open"
-
-    return ss.SynSem(synVal, semVal)
-
-fixedDets = [("a", "+", "-", "indef", "narrow", "AbsVal", 1)]
+    return det_fixed_lex(sg, plu, "indef", width, "RelVal", val)
 
 
-relDets = [
+def det_open_lex(sg, plu, df, width):
+
+    syn_val, sem_val = det_lex(sg, plu, df, width)
+    syn_val["quant"] = "open"
+
+    return SynSem(syn_val, sem_val)
+
+fixed_dets = [("a", "+", "-", "indef", "narrow", "AbsVal", 1)]
+
+
+rel_dets = [
     ("all", "any", "+", "narrow", 1),
     ("each", "+", "-", "wide", 1),
     ("every", "+", "-", "narrow", 1)]
         
-openDets = [
+open_dets = [
     ("some", "any", "any", "indef", "narrow"),
     ("that", "+", "any", "distal", "narrow"),
     ("the", "any", "any", "definite", "narrow"),
     ("those", "-", "+", "distal", "narrow")]
 
-def AddDetsToLex(lex, fsa):
-    def AddDet(form, synSem):
-        AddLex(form, lex, synSem, fsa, "det")
+def add_dets_to_lex(lex, fsa):
+    def add_det(form, synSem):
+        add_lex(form, lex, synSem, fsa, "det")
 
-    for form, sg, plu, df, width, rel, val in fixedDets:
-        AddDet(form, DetFixedLex(sg, plu, df, width, rel, val))
-    for form, sg, plu, width, val in relDets:
-        AddDet(form, DetRelLex(sg, plu, width, val))
-    for form, sg, plu, df, width in openDets:
-        AddDet(form, DetOpenLex(sg, plu, df, width))
+    for form, sg, plu, df, width, rel, val in fixed_dets:
+        add_det(form, det_fixed_lex(sg, plu, df, width, rel, val))
+    for form, sg, plu, width, val in rel_dets:
+        add_det(form, det_rel_lex(sg, plu, width, val))
+    for form, sg, plu, df, width in open_dets:
+        add_det(form, det_open_lex(sg, plu, df, width))
                

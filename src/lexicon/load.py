@@ -4,13 +4,15 @@
 #
 
 from src.morph.fst import FST
-from src.lexicon.det import AddDetsToLex
-from src.lexicon.noun import AddNounsToLex
-from src.lexicon.pron import AddPronsToLex
+from src.lexicon.det import add_dets_to_lex
+from src.lexicon.noun import add_nouns_to_lex
+from src.lexicon.pron import add_prons_to_lex
+from src.lexicon.punc import add_puncs_to_lex
         
 lexicon = {}
-lexFsa = FST()
+lex_fsa = FST()
 
-AddNounsToLex(lexicon, lexFsa)
-AddDetsToLex(lexicon, lexFsa)
-AddPronsToLex(lexicon, lexFsa)
+add_nouns_to_lex(lexicon, lex_fsa)
+add_dets_to_lex(lexicon, lex_fsa)
+add_prons_to_lex(lexicon, lex_fsa)
+add_puncs_to_lex(lexicon, lex_fsa)

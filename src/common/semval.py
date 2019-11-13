@@ -8,12 +8,12 @@ class Relspec():
         self.roles = roles
 
 
-    def ToPrint(self):
+    def to_print(self):
 
         return (self.rel, self.roles)
 
 
-    def FillerFor(self, roleName):
+    def filler_for(self, roleName):
 
         return self.roles[roleName]
 
@@ -27,7 +27,7 @@ class SemValue():
 
     def __init__(self):
 
-        self.nextIndex = 1
+        self._next_index = 1
         self.relspecs = []
         self.hooks = {}
 
@@ -36,28 +36,28 @@ class SemValue():
 
         ret = SemValue()
 
-        ret.nextIndex = self.nextIndex
+        ret._next_index = self._next_index
         ret.relspecs = [x.copy() for x in self.relspecs]
         ret.hooks = self.hooks.copy()
 
         return ret
 
 
-    def ToPrint(self):
+    def to_print(self):
 
-        relspecs = [x.ToPrint() for x in self.relspecs]
+        relspecs = [x.to_print() for x in self.relspecs]
 
         return (relspecs, self.hooks)
 
         
-    def NextIndex(self):
+    def next_index(self):
 
-        ret = "x" + str(self.nextIndex)
-        self.nextIndex += 1
+        ret = "x" + str(self._next_index)
+        self._next_index += 1
         return ret
     
         
-    def AddRelspec(self, relspec, hookMatches, exposeHooks):
+    def add_relspec(self, relspec, hook_matches, expose_hooks):
 
         bindings = {}
         rel = relspec.rel
@@ -67,26 +67,26 @@ class SemValue():
             if type(filler) is str and filler[0] == "x":
                 if filler in bindings:
                     roles[role] = bindings[filler]
-                elif filler in hookMatches:
-                    useFiller = self.hooks[hookMatches[filler]]
-                    bindings[filler] = useFiller
-                    roles[role] = useFiller
+                elif filler in hook_matches:
+                    use_filler = self.hooks[hook_matches[filler]]
+                    bindings[filler] = use_filler
+                    roles[role] = use_filler
                 else:
-                    useFiller = self.NextIndex()
-                    bindings[filler] = useFiller
-                    roles[role] = useFiller
+                    use_filler = self.next_index()
+                    bindings[filler] = use_filler
+                    roles[role] = use_filler
             else:
                 roles[role] = filler
 
-        for hook, filler in exposeHooks.items():
+        for hook, filler in expose_hooks.items():
             self.hooks[hook] = bindings[filler]
 
         self.relspecs.append(Relspec(rel, roles))
 
 
-    def AddRelspecs(self, relspecs, hookMatches, exposeHooks):
+    def add_relspecs(self, relspecs, hook_matches, expose_hooks):
 
         for relspec in relspecs:
-            self.AddRelspec(relspec, hookMatches, exposeHooks)
+            self.add_relspec(relspec, hook_matches, expose_hooks)
 
             

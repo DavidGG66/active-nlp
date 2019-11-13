@@ -31,13 +31,13 @@ class Node():
         self.__analysis = None
         self.operations = []
 
-    def AddAnalysis(self, analysis):
-        if analysis.cat == Node:
+    def add_analysis(self, analysis):
+        if analysis.cat == None:
             raise SynCatError(analysis, "No category set")
 
         self.__analysis = analysis
 
-    def GetAnalysis(self):
+    def get_analysis(self):
         return self.__analysis
 
 class NodeError(Error):
@@ -49,10 +49,10 @@ class NodeError(Error):
 class Network():
 
     def __init__(self):
-        self.__nextNode = 1
+        self.__next_node = 1
         self.__nodes = {}
 
-    def AddNode(self, node):
+    def add_node(self, node):
         if node.activation == None:
             raise NodeError(node, "No activation set")
         elif node.range == None:
@@ -60,8 +60,8 @@ class Network():
         elif node.analysis == None:
             raise NodeError(node, "No analysis set")
         
-        self.nodes[self.nextNode] = node
-        self.nextNode += 1
+        self.__nodes[self.__next_node] = node
+        self.next_node += 1
 
-    def GetNode(self, idx):
+    def get_node(self, idx):
         return self.__nodes[idx]
