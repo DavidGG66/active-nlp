@@ -88,6 +88,7 @@ reg_sg_nouns = [
     ("thing", "Thing", "THING"),
     ("time", "Time", "TIME"),
     ("track", "Track", "TRACK"),
+    ("watch", "Watch", "WATCH"),
     ("way", "Way", "WAY"),
     ("week", "Week", "WEEK"),
     ("world", "World", "WORLD"),

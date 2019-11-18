@@ -4,6 +4,7 @@
 #
 
 from src.morph.fst import analyze_character, analyze_fsa_characters
+from src.parse.morth import apply_morth
 
 ##  A parse chart consists of
 #
@@ -32,6 +33,7 @@ from src.morph.fst import analyze_character, analyze_fsa_characters
 
 
 class Edge():
+    """ An entry in the chart - an analysis of some substring of the utterance """
 
     def __init__(self, begin, end, analysis, activation):
         self.begin = begin
@@ -41,22 +43,42 @@ class Edge():
 
 
 class Lexeme():
+    """ a substring of the utterance analyzed as a single lexical morpheme """
 
-    def __init__(self, agenda, agendum):
+    def __init__(self, agenda, agendum, lex_tags):
         self.begin = agendum.begin
         self.end = agendum.end
         self.form = agendum.result
         self.ortho_tags = agenda.ortho.finals[agendum.ortho_state]
-        self.lex_tags = agenda.lex.finals[agendum.lex_state]
+        self.lex_tags = lex_tags
+        self.left_bound = agendum.is_left_bound()
+        self.right_bound = agendum.is_right_bound()
 
 
     def to_print(self):
-        return [self.begin, self.end, self.form, self.ortho_tags, self.lex_tags]
+
+        if self.left_bound:
+            pform = "-"
+        else:
+            pform = "["
+        pform = pform + self.form
+        if self.right_bound:
+            pform = pform + "-"
+        else:
+            pform = pform + "]"
+            
+        return [self.begin, self.end, pform, self.ortho_tags, self.lex_tags]
     
-        
+
+def is_boundary(char):
+    """ is this character a word-boundary character """
+    return char in {" ", ".", ",", "?", "!", ":", ";", "-", "'", '"'}
+
+
 class MorphAgendum():
 
-    def __init__(self, begin, end, ortho, lex, result):
+    def __init__(self, utterance, begin, end, ortho, lex, result):
+        self.utterance = utterance
         self.begin = begin
         self.end = end
         self.ortho_state = ortho
@@ -68,6 +90,13 @@ class MorphAgendum():
         return [self.begin, self.end, self.ortho_state, self.lex_state, self.result]
 
 
+    def is_left_bound(self):
+        return not (self.begin == 0 or is_boundary(self.utterance[self.begin-1]))
+
+    def is_right_bound(self):
+        return (self.end < len(self.utterance)) and not is_boundary(self.utterance[self.end])
+
+
 class MorphAgenda():
 
     def __init__(self, ortho, lex, utterance):
@@ -75,7 +104,7 @@ class MorphAgenda():
         self.lex = lex
         self.utterance = utterance
         self.index = 0
-        init_agendum = MorphAgendum(0, 0, ortho.initial, lex.initial, "")
+        init_agendum = MorphAgendum(utterance, 0, 0, ortho.initial, lex.initial, "")
         self.agenda = [init_agendum]
         self.successes = []
 
@@ -83,14 +112,20 @@ class MorphAgenda():
     def to_print(self):
         return {
             "utterance": (self.utterance[:self.index], self.utterance[self.index:]),
-            "agenda": [agendum.to_print(self) for agendum in self.agenda],
-            "successes": [success.to_print(self) for success in self.successes]
-        }
+            "agenda": [agendum.to_print() for agendum in self.agenda],
+            "successes": [success.to_print() for success in self.successes]}
     
 
     def is_success(self, agendum):
         """ is the agendum in a success state """
-        return agendum.ortho_state in self.ortho.finals and agendum.lex_state in self.lex.finals
+        ortho_tags = self.ortho.finals.get(agendum.ortho_state)
+        lex_tags = self.lex.finals.get(agendum.lex_state)
+        is_left_bound = agendum.is_left_bound()
+        is_right_bound = agendum.is_right_bound()
+
+        if ortho_tags and lex_tags:
+            return apply_morth(lex_tags, ortho_tags, is_left_bound, is_right_bound)
+
     
     def consume_character(self):
         letter = self.utterance[self.index]
@@ -105,13 +140,14 @@ class MorphAgenda():
                 new_result = agendum.result + ''.join(out_letters)
                 lex_targets = analyze_fsa_characters(self.lex, agendum.lex_state, out_letters)
                 for lex_target in lex_targets:
-                    new_agendum = MorphAgendum(begin, end+1, ortho_target, lex_target, new_result)
-                    if self.is_success(new_agendum):
-                        successes.append(Lexeme(self, new_agendum))
+                    new_agendum = MorphAgendum(self.utterance, begin, end+1, ortho_target, lex_target, new_result)
+                    lex_tags = self.is_success(new_agendum)
+                    if lex_tags:
+                        successes.append(Lexeme(self, new_agendum, lex_tags))
                     new_agenda.append(new_agendum)
         if successes:
             self.successes.extend(successes)
-            new_agenda.append(MorphAgendum(self.index, self.index, self.ortho.initial, self.lex.initial, ""))
+            new_agenda.append(MorphAgendum(self.utterance, self.index, self.index, self.ortho.initial, self.lex.initial, ""))
         self.agenda = new_agenda
     
         

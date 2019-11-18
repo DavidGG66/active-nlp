@@ -589,7 +589,7 @@ def analyze_character(fst, state, char):
         for pair in arc.get_pairs():
             if char == pair[1]:
                 new_char = pair[0]
-                if newChar == 'epsilon':
+                if new_char == 'epsilon':
                     ret.append((target, []))
                 else:
                     ret.append((target, [new_char]))

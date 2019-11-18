@@ -11,4 +11,5 @@ def add_lex(form, lex, syn_sem, fsa, tag):
         lex[form].append(syn_sem)
     else:
         lex[form] = [syn_sem]
-        extend_fsa(fsa, form, tag)
+
+    extend_fsa(fsa, form, tag)

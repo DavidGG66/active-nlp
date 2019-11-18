@@ -18,5 +18,5 @@ class SynSem():
 
     def to_print(self):
 
-        return (self.syn_val.to_print(), map(lambda x: x.to_print(), self.sem_val))
+        return (self.syn_val.to_print(), list(map(lambda x: x.to_print(), self.sem_val)))
 
