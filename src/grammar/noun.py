@@ -1,4 +1,11 @@
-# Rules for 'NP', 'NBar', etc
+# Grammar rules for Noun-headed things
+#
+# src.grammar.noun
+#
+
+#
+#  Lexical rules turning NounLex into Noun
+#
 
 noun_lex_rules = [
     {"name": "Noun -> NounLex[sg]",
@@ -22,6 +29,34 @@ noun_lex_rules = [
      "head": {
          "dtr": "Head",
          "hooks": ["head", "event"]}},
+
+    {"name": "Noun -> NounLex[irrplu]",
+     "mother": {
+         "syn": {
+             "cat": "Noun",
+             "agr": {"plu": "+",
+                     "sg": "-"}},
+         "sem": {
+             "relspecs": [
+                 {"rel": "AbsVal",
+                  "roles": {
+                      "NODE": "x1",
+                      "VAL": "x2"}},
+                 {"rel": "GreaterThan",
+                  "roles": {
+                      "GREATER": "x2",
+                      "LESS": 1}}],
+             "hooks": {"quant": "x1"}}},
+     "dtrs": [
+         {"dtr": "Head",
+          "analyses": [
+              {"cat": "NounLex",
+               "regPlu": False,
+               "plural": True}]}],
+     "head": {
+         "dtr": "Head",
+         "hooks": ["head", "event"]}},
+
     {"name": "Noun -> NounLex[mass]",
      "mother": {
          "syn": {
@@ -30,10 +65,14 @@ noun_lex_rules = [
                      "sg": "+"}},
          "sem": {
              "relspecs": [
-                 {"rel": "RelVal",
+                 {"rel": "AmtVal",
                   "roles": {
                       "NODE": "x1",
-                      "VAL": 1}}],
+                      "VAL": "x2"}},
+                 {"rel": "GreaterThan",
+                  "roles": {
+                      "GREATER": "x2",
+                      "LESS": 0}}],
              "hooks": {"quant": "x1"}}},
      "dtrs": [
          {"dtr": "Head",
@@ -43,23 +82,34 @@ noun_lex_rules = [
      "head": {
          "dtr": "Head",
          "hooks": ["head", "event"]}},
+
     {"name": "Noun -> NounLex[sg] Suff[s]",
      "mother": {
          "syn": {
              "cat": "Noun",
              "agr": {"plu": "+",
-                     "sg": "+"}},
-         "sem": {"hooks": {"quant": "*Quant"}}},
+                     "sg": "-"}},
+         "sem": {"hooks": {"quant": ["*Quant"]}}},
      "dtrs": [
          {"dtr": "Head",
           "analyses": [
               {"cat": "NounLex",
                "plural": False,
-               "orthForm": "takesS"}]},
-         {"dtr": "Suff"}
-     ],
-     "head": {}}
-]
+               "orthForm": ["*RootForm"]}]},
+         {"dtr": "Suff",
+          "analyses": [
+              {"cat": "SuffLex",
+               "suffType": "plural",
+               "rootForm": ["*RootForm"]}],
+          "hooks": {
+              "quant": ["*Quant"]}}],
+     "head": {
+         "dtr": "Head",
+         "hooks": ["head", "event"]}}]
+
+#
+# Grammar rules operating on phrases and full word forms
+#
 
 noun_rules = [
     {"name": "NP -> Det (AP) NBar PostMod*",

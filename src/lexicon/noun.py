@@ -5,7 +5,7 @@
 
 from src.common.synval import SynValue
 from src.common.semval import Relspec, SemValue
-from src.common.synsem import SynSem
+from src.common.sign import Sign
 
 from src.lexicon.core import add_lex
 
@@ -23,9 +23,14 @@ def noun_lex(rel, role):
     
     relspec = Relspec(rel, roles)
     sem_val = SemValue()
-    sem_val.add_relspec(relspec, {}, hooks)
+    sem_val.add_relspec(relspec)
 
-    return SynSem(syn_val, sem_val)
+    sign = Sign()
+    sign.syn_val = syn_val
+    sign.sem_val = [sem_val]
+    sign.hooks = hooks
+
+    return sign
 
 def noun_count_lex(rel, role):
 
@@ -78,6 +83,7 @@ reg_sg_nouns = [
     ("eye", "Eye", "EYE"),
     ("girl", "Girl", "GIRL"),
     ("hand", "Hand", "HAND"),
+    ("list", "Enumeration", "ENUMERATION"),
     ("number", "Number", "NUMBER"),
     ("pain", "Pain1", "PAIN"),
     ("part", "Part", "PART"),
@@ -111,8 +117,8 @@ mass_nouns = [
 
 
 def add_nouns_to_lex(lex, fsa):
-    def add_noun(form, synSem):
-        add_lex(form, lex, synSem, fsa, "noun")
+    def add_noun(form, syn_sem):
+        add_lex(form, lex, syn_sem, fsa, "noun")
         
     for form, rel, role in reg_sg_nouns:
         add_noun(form, noun_reg_sg_lex(rel, role))

@@ -2,7 +2,7 @@
 
 from src.common.synval import SynValue
 from src.common.semval import Relspec, SemValue
-from src.common.synsem import SynSem
+from src.common.sign import Sign
 
 from src.lexicon.core import add_lex
 
@@ -27,14 +27,14 @@ def det_lex(sg, plu, df, width):
 
     relspec = Relspec("Quant", roles)
     sem_val = SemValue()
-    sem_val.add_relspec(relspec, {}, hooks)
+    sem_val.add_relspec(relspec)
 
-    return syn_val, sem_val
+    return syn_val, sem_val, hooks
 
 
 def det_fixed_lex(sg, plu, df, width, rel, val):
 
-    syn_val, sem_val = det_lex(sg, plu, df, width)
+    syn_val, sem_val, hooks = det_lex(sg, plu, df, width)
     syn_val["quant"] = "fixed"
 
     roles = {
@@ -42,9 +42,14 @@ def det_fixed_lex(sg, plu, df, width, rel, val):
         "VAL": 1}
     
     relspec = Relspec("AbsVal", roles)
-    sem_val.add_relspec(relspec, {"x3": "quant"}, {})
+    sem_val.add_relspec(relspec)
 
-    return SynSem(syn_val, sem_val)
+    ret = Sign()
+    ret.syn_val = syn_val
+    ret.sem_val = [sem_val]
+    ret.hooks = hooks
+    
+    return ret
 
 
 def det_rel_lex(sg, plu, width, val):
@@ -54,10 +59,16 @@ def det_rel_lex(sg, plu, width, val):
 
 def det_open_lex(sg, plu, df, width):
 
-    syn_val, sem_val = det_lex(sg, plu, df, width)
+    syn_val, sem_val, hooks = det_lex(sg, plu, df, width)
     syn_val["quant"] = "open"
 
-    return SynSem(syn_val, sem_val)
+    ret = Sign()
+    ret.syn_val = syn_val
+    ret.sem_val = [sem_val]
+    ret.hooks = hooks
+    
+    return ret
+
 
 fixed_dets = [("a", "+", "-", "indef", "narrow", "AbsVal", 1)]
 

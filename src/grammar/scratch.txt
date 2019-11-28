@@ -1,9 +1,5 @@
-NBar -> N
+"I ate the cookie"
 
-NBar -> NBar NBarConj
+{
 
-NBarConj -> Conj NBar
-
-
-
-eggs beans [NBarConj [Conj and] [NBar [N spam]]]
+}

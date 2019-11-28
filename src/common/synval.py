@@ -7,6 +7,7 @@ class SynValue():
         self.cat = cat
         self.is_lexical = is_lexical
         self.features = {}
+        self.args = []
 
 
     def __getitem__(self, key):
@@ -21,12 +22,21 @@ class SynValue():
 
     def __copy__(self):
 
-        return SynValue(self.cat, self.isLexical, self.features.copy())
+        ret = SynValue(self.cat, self.is_lexical)
+
+        ret.features = self.features.copy()
+        ret.args = self.args
+
+        return ret
 
 
     def to_print(self):
 
-        return (self.cat, self.features)
+        ret = self.features.copy()
+        ret["cat"] = self.cat
+        ret["args"] = self.args
+        
+        return ret
     
 
     def lex_syn(cat):

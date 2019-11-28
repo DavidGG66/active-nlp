@@ -2,18 +2,22 @@
 
 sentence_rules = [
     {"name": "S -> NP VP",
-     "mother": {"cat": "S"},
+     "mother": {
+         "syn": {"cat": "S"},
+         "hooks": {"event": ["*Event"]}},
      "dtrs": [
          {"dtr": "Subject",
           "analyses": [
               {"cat": "NP",
-               "agr": "*1"}],
+               "case": "nom",
+               "agr": ["*Agr"]}],
+          "hooks": {
+              "root": ["*Subj"]}},
          {"dtr": "Predicate",
           "analyses": [
               {"cat": "VP",
-               "tense": "finite",
-               "agr": "*1"}]}],
-     "head": {
-         "dtr": "Predicate",
-         "features": ["tense"]}}
-    ]
+               "form": "finite",
+               "agr": ["*Agr"]}],
+          "hooks": {
+              "subj": ["*Subj"],
+              "event": ["*Event"]}}]}]

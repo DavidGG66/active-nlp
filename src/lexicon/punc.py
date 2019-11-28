@@ -5,17 +5,21 @@
 
 from src.common.synval import SynValue
 from src.common.semval import SemValue
-from src.common.synsem import SynSem
+from src.common.sign import Sign
 
 from src.lexicon.core import add_lex
 
 def punc_lex(type):
     """ Make a morpheme break """
 
-    synVal = SynValue("PuncLex", True)
-    semVal = SemValue()
+    syn_val = SynValue("PuncLex", True)
+    sem_val = SemValue()
 
-    return SynSem(synVal, semVal)
+    ret = Sign()
+    ret.syn_val = syn_val
+    ret.sem_val = sem_val
+
+    return ret
 
 
 puncs = [

@@ -12,7 +12,7 @@ from src.parse.morth import apply_morth
 #      -  Each edge has
 #         .  A begin position
 #         .  An end position
-#         .  A SynSem analysis
+#         .  A Sign analysis
 #         .  An activation level
 #      -  Edges are adjacent if the end position of one
 #         is separated from the begin position of the
@@ -40,6 +40,11 @@ class Edge():
         self.end = end
         self.activation = activation
         self.analysis = analysis
+
+
+def edges_from_lexeme(lexeme, lexicon):
+    """ Make an edge from a lexeme and a lexicion """
+    pass
 
 
 class Lexeme():

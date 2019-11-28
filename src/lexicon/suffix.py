@@ -5,11 +5,11 @@
 
 from src.common.synval import SynValue
 from src.common.semval import Relspec, SemValue
-from src.common.synsem import SynSem
+from src.common.sign import Sign
 
 from src.lexicon.core import add_lex
 
-def plu_suff_lex():
+def plu_suff_lex(orth_form):
 
     rel1 = "AbsVal"
     roles1 = {
@@ -25,21 +25,31 @@ def plu_suff_lex():
     relspec2 = Relspec(rel2, roles2)
     
     syn_val = SynValue("SuffLex", True)
-    sem_val = SemValue()
-    sem_val.add_relspec(relspec1, {}, {"val": "x2", "quant": "x1"})
-    sem_val.add_relspec(relspec2, {"x2": "val"}, {})
+    syn_val["suffType"] = "plural"
+    syn_val["rootForm"] = orth_form
 
-    return SynSem(syn_val, sem_val)
+    sem_val = SemValue()
+    sem_val.add_relspec(relspec1)
+    sem_val.add_relspec(relspec2)
+
+    hooks = {"quant": "x1"}
+
+    ret = Sign()
+    ret.syn_val = syn_val
+    ret.sem_val = [sem_val]
+    ret.hooks = hooks
+
+    return ret
 
 
 suffixes = [
-    ("es"),
-    ("s")]
+    ("es", "takesEs"),
+    ("s", "takesS")]
 
 
 def add_suffixes_to_lex(lex, fsa):
     def add_suff(form, synSem):
         add_lex(form, lex, synSem, fsa, "suffix")
 
-    for form in suffixes:
-        add_suff(form, plu_suff_lex())
+    for form, orth_form in suffixes:
+        add_suff(form, plu_suff_lex(orth_form))

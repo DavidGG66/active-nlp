@@ -5,7 +5,7 @@
 
 from src.common.synval import SynValue
 from src.common.semval import SemValue
-from src.common.synsem import SynSem
+from src.common.sign import Sign
 
 from src.lexicon.core import add_lex
 
@@ -13,9 +13,14 @@ def pron_lex():
     """ Make a pronoun """
 
     syn_val = SynValue("PronLex", True)
-    semVal = SemValue()
+    sem_val = SemValue()
 
-    return SynSem(syn_val, semVal)
+    ret = Sign()
+    ret.syn_val = syn_val
+    ret.sem_val = sem_val
+    
+    return ret
+
 
 def pers_pron_lex(pers, sg, case):
     """ Make a personal pronoun """
@@ -28,6 +33,7 @@ def pers_pron_lex(pers, sg, case):
     ret.syn_val["case"] = case
 
     return ret
+
 
 def animate_pron_lex(pers, sg, gen, case):
     """ Make an animate personal pronoun, like 'me' """

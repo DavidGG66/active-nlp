@@ -149,8 +149,10 @@
 	""],
      "name": "NP -> Det[open] N2",
      "mother": {
-	 "syn": {"cat": "NP"},
-	 "hooks": {"root": ["*Root"]}},
+	 "syn": {"cat": "NP",
+		 "agr": ["*Agr"]},
+	 "hooks": {"root": ["*Root"],
+		   "head": ["*Head"]}},
      "dtrs": [
 	 {"dtr": "Det",
 	  "analyses": [
@@ -167,11 +169,7 @@
 	       "agr": ["*Agr"]}],
 	  "hooks": {
 	      "head": ["*Head"],
-	      "quant": ["*Quant"]}}],
-     "head": {
-	 "dtr": "Head",
-	 "features": ["agr"],
-	 "hooks": ["head"]}},
+	      "quant": ["*Quant"]}}]},
 
     {"comment": [
 	"",

@@ -108,3 +108,693 @@
 		 "node": 5},
 		{"dtr": "Predicate",
 		 "node": 7}]}}}
+
+{
+    1: {"range": [1, 1],
+	"text": "the",
+	"parents": [2],
+	"syn": {
+	    "cat": "Det",
+	    "agr": {
+		"plu": "any",
+		"sg": "any"},
+	    "quant": "open"},
+	"sem": [
+	    {"rel": "Quant",
+	     "rolespecs": {
+		 "DEF": "definite",
+		 "QUANT": "x3",
+		 "RESTR": "x1",
+		 "SCOPE": "x2",
+		 "WIDTH": "narrow"}}],
+	"hooks": {
+	    "head": "x1",
+	    "quant": "x3",
+	    "root": "x2"}},
+
+    2: {"range": [1, 1],
+	"text": "the",
+	"parents": [3],
+	"syn": {"cat": "NP",
+		"agr": ["*Agr"],
+		"args": [
+		    {"arg": "Det",
+		     "node": 1,
+		     "syn": {
+			 "cat": "Det",
+			 "agr": ["*Agr"]},
+		     "hooks": {
+			 "head": "x1",
+			 "root": "x2",
+			 "quant": "x3"}}]},
+	"hooks": {
+		"root": "x2",
+		"head": "x1"},
+	"subcat": [
+	    {"arg": "Head",
+	     "analyses": [
+		 {"cat": "N2",
+		  "agr": ["*Agr"]}],
+	     "hooks": {
+		 "head": "x1",
+		 "quant": "x3"}}]},
+
+    3: {"range": [1 1],
+	"text": "the",
+	"parents": [],
+	"syn": {"cat": "S",
+		"args": [
+		    {"arg": "Subject",
+		     "node": 2,
+		     "syn": {
+			 "cat": "NP",
+			 "agr": ["*Agr"]},
+		     "hooks": {"root": "x2"}}]},
+	"hooks": {"event": ["*Event"]},
+	"subcat": [
+	    {"arg": "Predicate",
+	     "analyses": [
+		 {"cat": "VP",
+		  "form": "finite",
+		  "agr": ["*Agr"]}],
+	     "hooks": {
+		 "subj": "x2",
+		 "event": ["*Event"]}}]},
+
+    4: {"range": [2, 2],
+	"text": "dog",
+	"parents": [],
+	"syn": {"cat": "Noun",
+		"agr": {"plu": "-",
+			"sg": "+"}},
+	"sem": {
+	    "relspecs": [
+		{"rel": "Dog",
+		 "rolespecs": {
+		     "DOG": "x4",
+		     "_EVENT": "x5"}},
+		{"rel": "AbsVal",
+		 "rolespecs": {
+		     "NODE": "x6",
+		     "VAL": 1}}]},
+	"hooks": {
+	    "quant": "x6",
+	    "head": "x4",
+	    "event": "x5"}},
+
+    5: {"range": [1, 2],
+	"text": "the dog",
+	"parents": []
+	"syn": {"cat": "NP",
+		"agr": ["*Agr"],
+		"args": [
+		    {"arg": "Det",
+		     "node": 1,
+		     "syn": {
+			 "cat": "Det",
+			 "agr": ["*Agr"]},
+		     "hooks": {
+			 "head": "x1",
+			 "root": "x2",
+			 "quant": "x3"}},
+		    {"arg": "Head",
+		     "node": 4,
+		     "syn": {
+			 "cat": "Noun",
+			 "agr": ["*Agr"]},
+		     "hooks": {
+			 "head": "x1",
+			 "quant": "x3"}}]},
+	"hooks": {
+	    "root": "x2",
+	    "head": "x1"},
+	"hook_maps": {
+	    "x6": "x3",
+	    "x4": "x1"}},
+
+    "5-full": {
+	"range": [1, 2],
+	"text": "the dog",
+	"syn": {"cat": "NP",
+		"agr": ["*Agr"],
+		"args": [
+		    {"arg": "Det",
+		     "range": [1, 1],
+		     "text": "the",
+		     "syn": {
+			 "cat": "Det",
+			 "agr": ["*Agr"],
+			 "quant": "open"},
+		     "hooks": {
+			 "head": "x1",
+			 "root": "x2",
+			 "quant": "x3"}},
+		    {"arg": "Head",
+		     "range": [2, 2],
+		     "text": "dog",
+		     "syn": {
+			 "cat": "Noun",
+			 "agr": ["*Agr"]},
+		     "hooks": {
+			 "quant": "x3",
+			 "head": "x1",
+			 "event": "x5"}}]},
+	"sem": [
+	    {"rel": "Quant",
+	     "rolespecs": {
+		 "DEF": "definite",
+		 "QUANT": "x3",
+		 "RESTR": "x1",
+		 "SCOPE": "x2",
+		 "WIDTH": "narrow"}},
+	    {"rel": "Dog",
+	     "rolespecs": {
+		 "DOG": "x1",
+		 "_EVENT": "x5"}},
+	    {"rel": "AbsVal",
+	     "rolespecs": {
+		 "NODE": "x3",
+		 "VAL": 1}}],
+	"hooks": {
+	    "head": "x1",
+	    "root": "x2"},
+	"bindings": {
+	    "*Agr": {
+		"plu": "-",
+		"sg": "+"}}},
+    
+    6: {"range": [1, 2],
+	"text": "the dog",
+	"parents": [],
+	"syn": {"cat": "S",
+		"args": [
+		    {"arg": "Subject",
+		     "node": 5,
+		     "syn": {
+			 "agr": ["*Agr"]},
+		     "hooks": {"root": "x2"}}]},
+	"hooks": {"event": ["*Event"]},
+	"subcat": [
+	    {"arg": "Predicate",
+	     "analyses": [
+		 {"cat": "VP",
+		  "form": "finite",
+		  "agr": ["*Agr"]}],
+	     "hooks": {
+		 "subj": "x2",
+		 "event": ["*Event"]}}]},
+
+    7: {"range": [3, 3],
+	"text": "barks",
+	"parents": [],
+	"syn": {"cat": "VP"},
+	"sem": [
+	    {"rel": "Bark",
+	     "rolespecs": {
+		 "BARKER": "x7",
+		 "_EVENT": "x8"}}],
+	"hooks": {
+	    "subj": "x7",
+	    "event": "x8"}},
+    
+    8: {"range": [1, 3],
+	"text": "the dog barks",
+	"parents": [],
+	"syn": {"cat": "S",
+		"args": [
+		    {"arg": "Subject",
+		     "node": 5,
+		     "syn": {
+			 "agr": ["*Agr"]},
+		     "hooks": {
+			 "root": "x2",
+			 "head": "x1"}},
+		    {"agr": "Predicate",
+		     "node": 7,
+		     "syn": {"agr": ["*Agr"]},
+		     "hooks": {
+			 "subj": "x2",
+			 "event": "x8"}}]},
+	"hooks": {"event": "x8"}},
+
+    "8-full": {
+	"range": [1, 3],
+	"text": "the dog barks",
+	"syn": {"cat": "S",
+		"args": [
+		    {"arg": "Subject",
+		     "range": [1, 2],
+		     "text": "the dog",
+		     "syn": {"cat": "NP",
+			     "agr": ["*Agr"],
+			     "args": [
+				 {"arg": "Det",
+				  "range": [1, 1],
+				  "text": "the",
+				  "syn": {
+				      "cat": "Det",
+				      "agr": ["*Agr"],
+				      "quant": "open"}},
+				 {"arg": "Head",
+				  "range": [2, 2],
+				  "text": "dog",
+				  "syn": {
+				      "cat": "Noun",
+				      "agr": ["*Agr"]}}]},
+		     "hooks": {
+			 "head": "x1",
+			 "root": "x2"}},
+		    {"arg": "Predicate",
+		     "range": [3, 3],
+		     "text": "barks",
+		     "syn": {"cat": "VP"},
+		     "hooks": {
+			 "subj": "x2",
+			 "event": "x8"}}]},
+	"sem": [
+	    {"rel": "Quant",
+	     "rolespecs": {
+		 "DEF": "definite",
+		 "QUANT": "x3",
+		 "RESTR": "x1",
+		 "SCOPE": "x2",
+		 "WIDTH": "narrow"}},
+	    {"rel": "Dog",
+	     "rolespecs": {
+		 "DOG": "x1",
+		 "_EVENT": "x5"}},
+	    {"rel": "AbsVal",
+	     "rolespecs": {
+		 "NODE": "x3",
+		 "VAL": 1}},
+	    {"rel": "Bark",
+	     "rolespecs": {
+		 "BARKER": "x2",
+		 "_EVENT": "x8"}}],
+	"hooks": {"event": "x8"}}
+}
+
+"I ate the cookie"
+
+{
+    1: {"range": [1, 1],
+	"text": "I",
+	"syn": {
+	    "cat": "Pron",
+	    "animate": "+",
+	    "case": "nom",
+	    "gender": "any",
+	    "pers": "1",
+	    "personal": "+"}},
+
+    2: {"range": [1, 1],
+	"text": "I",
+	"syn": {
+	    "cat": "NP",
+	    "args": {
+		"arg": "Pron",
+		"node": 1}},
+	"sem": [
+	    {"rel" "PronRel",
+	     "rolespecs": {
+		 "PRON": "x1"}}],
+	"hooks": {
+	    "root": "x1"}},
+
+    3: {"range": [1, 1],
+	"text": "I",
+	"syn": {
+	    "cat": "S",
+	    "args": [
+		{"arg": "Subject",
+		 "node": 2,
+		 "syn": {
+		     "cat": "NP",
+		     "agr": ["*Agr"]},
+		 "hooks": {"root": "x1"}}]},
+	"hooks": {"event": ["*Event"]},
+	"subcat": [
+	    {"arg": "Predicate",
+	     "analyses": [
+		 {"cat": "VP",
+		  "form": "finite",
+		  "agr": ["*Agr"]}],
+	     "hooks": {
+		 "subj": "x1",
+		 "event": ["*Event"]}}]},
+
+    4: {"range": [2, 2],
+	"text": "eat",
+	"syn": {"cat": "VP"},
+	"sem": [
+	    {"rel": "Eat",
+	     "rolespecs": {
+		 "EATER": "x2",
+		 "EATEN": "x3",
+		 "_EVENT": "x4"}}],
+	"hooks": {
+	    "subj": "x2",
+	    "event": "x4"},
+	"subcat": [
+	    {"arg": "Object",
+	     "analyses": [
+		 {"cat" "NP",
+		  "case": "acc"}],
+	     "hooks": {"root": "x3"}}]},
+
+    5: {"range": [1, 2],
+	"text": "I eat",
+	"syn": {
+	    "cat": "S",
+	    "args": [
+		{"arg" "Subject",
+		 "node": 2,
+		 "syn": {
+		     "cat": "NP",
+		     "agr": ["*Agr"]},
+		 "hooks": {"root": "x1"}},
+		{"arg": "Predicate",
+		 "node": 4,
+		 "syn": {"agr": ["*Agr"]},
+		 "hooks": {
+		     "subj": "x1",
+		     "event": "x4"}}]},
+	"hooks": {"event": "x4"},
+	"index_maps": {"x2": "x1"}},
+
+    6: {"range": [3, 3],
+	"text": "the",
+	"syn": {
+	    "cat": "Det",
+	    "agr": {
+		"plu": "any",
+		"sg": "+"},
+	    "quant": "open"},
+	"sem": [
+	    {"rel": "Quant",
+	     "rolespecs": {
+		 "DEF": "definite",
+		 "QUANT": "x5",
+		 "RESTR": "x6",
+		 "SCOPE": "x7",
+		 "WIDTH": "narrow"}}],
+	"hooks": {
+	    "head": "x6",
+	    "quant": "x5",
+	    "root": "x7"}},
+
+    7: {"range": [3, 3],
+	"text": "the",
+	"syn": {"cat": "NP",
+		"agr": ["*Agr"],
+		"args": [
+		    {"arg": "Det",
+		     "node": 6,
+		     "syn": {
+			 "cat": "Det",
+			 "agr": ["*Agr"]},
+		     "hooks": {
+			 "head": "x6",
+			 "root": "x7",
+			 "quant": "x5"}}]},
+	"hooks": {
+	    "root": "x7",
+	    "head": "x6"},
+	"subcat": [
+	    {"arg": "Head",
+	     "analyses": [
+		 {"cat": "N2",
+		  "agr": ["*Agr"]}],
+	     "hooks": {
+		 "head": "x6",
+		 "quant": "x5"}}]},
+
+    8: {"range": [2, 3],
+	"text": "eat the",
+	"syn": {"cat": "VP",
+		"args": [
+		    {"arg": "Object",
+		     "node": 7,
+		     "syn": {
+			 "cat": "NP",
+			 "case": "acc"},
+		     "hooks": {"root": "x3",
+			       "head": "x6"}}]},
+	"sem": [
+	    {"rel": "Eat",
+	     "rolespecs": {
+		 "EATER": "x2",
+		 "EATEN": "x3",
+		 "_EVENT": "x4"}}],
+	"hooks": {
+	    "subj": "x2",
+	    "event": "x4"},
+	"index_map": {"x7": "x3"}},
+
+    9: {"range": [1, 3],
+	"text": "I eat the",
+	"syn": {
+	    "cat": "S",
+	    "args": [
+		{"arg": "Subject",
+		 "node": 2,
+		 "syn": {
+		     "cat": "NP",
+		     "agr": ["*Agr"]},
+		 "hooks": {"root": "x1"}},
+		{"arg": "Predicate",
+		 "node": 8,
+		 "syn": {"agr": ["*Agr"]},
+		 "hooks": {
+		     "subj": "x1",
+		     "event": "x4"}}]},
+	"hooks": {"event": "x4"},
+	"index_maps": {
+	    "x2": "x1",
+	    "x7": "x3"}},
+
+    10: {"range": [4, 4],
+	 "text": "cookie",
+	 "syn": {"cat": "Noun",
+		 "agr": {"plu": "-",
+			 "sg": "+"}},
+	 "sem": [
+	     {"rel": "Cookie",
+	      "rolespecs": {
+		  "COOKIE": "x8",
+		  "_EVENT": "x9"}},
+	     {"rel": "AbsVal",
+	      "rolespecs": {
+		  "NODE": "x10",
+		  "VAL": 1}}],
+	 "hooks": {
+	     "quant": "x10",
+	     "head": "x8",
+	     "event": "x9"}},
+
+    11: {"range": [3, 4],
+	 "text": "the cookie",
+	 "syn": {"cat": "NP",
+		 "agr": ["*Agr"],
+		 "args": [
+		     {"arg": "Det",
+		      "node": 6,
+		      "syn": {
+			  "cat": "Det",
+			  "agr": ["*Agr"]},
+		      "hooks": {
+			  "head": "x6",
+			  "root": "x7",
+			  "quant": "x5"}},
+		     {"arg": "Head",
+		      "node": 10,
+		      "syn": {
+			  "cat": "Noun",
+			  "agr": ["*Agr"]},
+		      "hooks": {
+			  "head": "x6",
+			  "quant": "x5"}}]},
+	 "hooks": {
+	     "root": "x7",
+	     "head": "x6"},
+	 "index_map": {
+	     "x8": "x6",
+	     "x10": "x5"}},
+
+    12: {"range": [2, 4],
+	 "text": "eat the cookie",
+	 "syn": {"cat": "VP",
+		 "args": [
+		     {"arg": "Object",
+		      "node": 11,
+		      "syn": {
+			  "cat": "NP",
+			  "case": "acc"},
+		      "hooks": {
+			  "root": "x3",
+			  "head": "x6"}}]},
+	 "sem": [
+	     {"rel": "Eat",
+	      "rolespecs": {
+		  "EATER": "x2",
+		  "EATEN", "x3",
+		  "_EVENT": "x4"}}],
+	 "hooks": {
+	     "subj": "x2",
+	     "event": "x4"},
+	 "index_map": {
+	     "x7": "x3",
+	     "x8": "x6",
+	     "x10": "x5"}},
+
+    13: {"range": [1, 4],
+	 "text": "I eat the cookie",
+	 "syn": {
+	     "cat": "S",
+	     "args": [
+		 {"arg": "Subject",
+		  "node": 2,
+		  "syn": {
+		      "cat": "NP",
+		      "agr": ["*Agr"]},
+		  "hooks": {"root": "x1"}},
+		 {"arg": "Predicate",
+		  "node": 12,
+		  "syn": {"agr": ["*Agr"]},
+		  "hooks": {
+		      "subj": "x1",
+		      "event": "x4"}}]},
+	 "hooks": {"event": "x4"},
+	 "index_maps": {
+	     "x2": "x1",
+	     "x7": "x3",
+	     "x8": "x6",
+	     "x10": "x5"}}}
+
+"Seem to bark"
+
+{
+    1: {"range": [1, 1],
+	"text": "seem",
+	"syn": {"cat": "VP"},
+	"sem": [
+	    {"rel": "Seem",
+	     "rolespecs": {
+		 "SEEMED": "x1",
+		 "_EVENT": "x2"}}],
+	"hooks": {
+	    "subj": "x3",
+	    "event": "x2"},
+	"subcat": [
+	    {"arg": "VPObj",
+	     "analyses": [
+		 {"cat": "VP",
+		  "form": "infinitive"}],
+	     "hooks": {
+		 "event": "x1",
+		 "subj": "x3"}}]},
+
+    2: {"range": [2, 3],
+	"text": "to bark",
+	"syn": {"cat": "VP",
+		"form": "infinitive"},
+	"sem": [
+	    {"rel": "Bark",
+	     "rolespecs": {
+		 "BARKER": "x4",
+		 "_EVENT": "x5"}}],
+	"hooks": {
+	    "subj": "x4",
+	    "event": "x5"}},
+
+    3: {"range": [1, 3],
+	"text": "seem to bark",
+	"syn": {"cat": "VP",
+		"args": [
+		    {"arg": "VPObj",
+		     "node": 2,
+		     "syn": {"cat": "VP"},
+		     "hooks": {
+			 "event": "x1",
+			 "subj": "x3"}}]},
+	"sem": [
+	    {"rel": "Seem",
+	     "rolespecs": {
+		 "SEEMED": "x1",
+		 "_EVENT": "x2"}},
+	    {"rel": "Bark",
+	     "rolespecs": {
+		 "BARKER": "x3",
+		 "_EVENT": "x1"}}],
+	"hooks": {
+	    "subj": "x3",
+	    "event": "x2"},
+	"index_maps": {
+	    "x5": "x1",
+	    "x4": "x3"}}
+}
+
+"want to bark"
+
+{
+    1: {"range": [1, 1],
+	"text": "want",
+	"syn": {"cat": "VP"},
+	"sem": [
+	    {"rel": "Want",
+	     "rolespecs": {
+		 "WANTER": "x1",
+		 "WANTED": "x2",
+		 "_EVENT": "x3"}}],
+	"hooks": {
+	    "subj": "x1",
+	    "event": "x3"},
+	"subcat": [
+	    {"arg": "VPObj",
+	     "analyses": [
+		 {"cat": "VP",
+		  "form": "infinitive"}],
+	     "hooks": {
+		 "event": "x2",
+		 "subj": "x1"}}]},
+
+    2: {"range": [2, 3],
+	"text": "to bark",
+	"syn": {"cat": "VP",
+		"form": "infinitive"},
+	"sem": [
+	    {"rel": "Bark",
+	     "rolespecs": {
+		 "BARKER": "x4",
+		 "_EVENT": "x5"}}],
+	"hooks": {
+	    "subj": "x4",
+	    "event": "x5"}},
+
+    3: {"range": [1, 3],
+	"text": "want to bark",
+	"syn": {"cat": "VP",
+		"args": [
+		    {"arg": "VPObj",
+		     "node": 2,
+		     "syn": {"cat": "VP"},
+		     "hooks": {
+			 "subj": "x1",
+			 "event": "x2"}}]},
+	"sem": [
+	    {"rel": "Want",
+	     "rolespecs": {
+		 "WANTER": "x1",
+		 "WANTED": "x2",
+		 "_EVENT": "x3"}},
+	    {"rel": "Bark",
+	     "rolespecs": {
+		 "BARKER": "x1",
+		 "_EVENT": "x2"}}],
+	"hooks": {
+	    {"subj": "x1",
+	     "event": "x3"}},
+	"index_maps": {
+	    "x4": "x1",
+	    "x5": "x2"}}
+}
