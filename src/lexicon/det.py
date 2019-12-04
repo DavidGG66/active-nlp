@@ -4,74 +4,67 @@ from src.common.synval import SynValue
 from src.common.semval import Relspec, SemValue
 from src.common.sign import Sign
 
-from src.lexicon.core import add_lex
+from src.lexicon.core import add_lex, get_next_index, add_role
 
-def det_lex(sg, plu, df, width):
-
+def det_syn_val(sg, plu):
     syn_val = SynValue("DetLex", True)
     syn_val["agr"] = {
         "sg": sg,
         "plu": plu}
+    return syn_val
 
-    roles = {
-        "RESTR": "x1",
-        "SCOPE": "x2",
-        "QUANT": "x3",
-        "DEF": df,
-        "WIDTH": width}
+def det_entry(sg, plu, df, width, next_index):
+
+    syn_val = det_syn_val(sg, plu)
+
+    relspec = Relspec("Quant", {})
+    head, next_index = add_role(next_index, relspec, "RESTR")
+    root, next_index = add_role(next_index, relspec, "SCOPE")
+    quant, next_index = add_role(next_index, relspec, "QUANT")
+    relspec.roles["DEF"] = df
+    relspec.roles["WIDTH"] = width
 
     hooks = {
-        "head": "x1",
-        "root": "x2",
-        "quant": "x3"}
+        "head": head,
+        "root": root,
+        "quant": quant}
 
-    relspec = Relspec("Quant", roles)
-    sem_val = SemValue()
-    sem_val.add_relspec(relspec)
-
-    return syn_val, sem_val, hooks
+    return syn_val, relspec, hooks, [], next_index
 
 
-def det_fixed_lex(sg, plu, df, width, rel, val):
+def fixed_det_entry(det_lex, next_index):
 
-    syn_val, sem_val, hooks = det_lex(sg, plu, df, width)
+    sg, plu, df, width, rel, val = det_lex
+    syn_val, relspec, hooks, subcat, next_index = det_entry(sg, plu, df, width, next_index)
     syn_val["quant"] = "fixed"
-
-    roles = {
-        "NODE": "x3",
+    val_roles = {
+        "NODE": hooks["quant"],
         "VAL": 1}
-    
-    relspec = Relspec("AbsVal", roles)
-    sem_val.add_relspec(relspec)
+    val_relspec = Relspec("AbsVal", val_roles)
 
-    ret = Sign()
-    ret.syn_val = syn_val
-    ret.sem_val = [sem_val]
-    ret.hooks = hooks
-    
-    return ret
+    return syn_val, [relspec, val_relspec], hooks, subcat, next_index
 
 
-def det_rel_lex(sg, plu, width, val):
+def rel_det_entry(det_lex, next_index):
 
-    return det_fixed_lex(sg, plu, "indef", width, "RelVal", val)
+    sg, plu, width, val = det_lex
+    return fixed_det_entry([sg, plu, "indef", width, "RelVal", val], next_index)
 
 
-def det_open_lex(sg, plu, df, width):
+def open_det_entry(det_lex, next_index):
 
-    syn_val, sem_val, hooks = det_lex(sg, plu, df, width)
+    sg, plu, df, width = det_lex
+    syn_val, relspec, hooks, subcat, next_index = det_entry(sg, plu, df, width, next_index)
     syn_val["quant"] = "open"
 
-    ret = Sign()
-    ret.syn_val = syn_val
-    ret.sem_val = [sem_val]
-    ret.hooks = hooks
-    
-    return ret
+    return syn_val, [relspec], hooks, subcat, next_index
 
+det_class_table = {
+    "det:relative": rel_det_entry,
+    "det:open": open_det_entry,
+    "det:fixed": fixed_det_entry}
 
 fixed_dets = [("a", "+", "-", "indef", "narrow", "AbsVal", 1)]
-
 
 rel_dets = [
     ("all", "any", "+", "narrow", 1),
@@ -85,13 +78,10 @@ open_dets = [
     ("those", "-", "+", "distal", "narrow")]
 
 def add_dets_to_lex(lex, fsa):
-    def add_det(form, synSem):
-        add_lex(form, lex, synSem, fsa, "det")
-
     for form, sg, plu, df, width, rel, val in fixed_dets:
-        add_det(form, det_fixed_lex(sg, plu, df, width, rel, val))
+        add_lex(form, lex, ["det:fixed", sg, plu, df, width, rel, val], fsa, "det")
     for form, sg, plu, width, val in rel_dets:
-        add_det(form, det_rel_lex(sg, plu, width, val))
+        add_lex(form, lex, ["det:rel", sg, plu, width, val], fsa, "det")
     for form, sg, plu, df, width in open_dets:
-        add_det(form, det_open_lex(sg, plu, df, width))
-               
+        add_lex(form, lex, ["det:open", sg, plu, df, width], fsa, "det")
+

@@ -13,11 +13,9 @@ def punc_lex(type):
     """ Make a morpheme break """
 
     syn_val = SynValue("PuncLex", True)
-    sem_val = SemValue()
+    sem_val = SemValue([])
 
-    ret = Sign()
-    ret.syn_val = syn_val
-    ret.sem_val = sem_val
+    ret = Sign(syn_val, sem_val, {})
 
     return ret
 

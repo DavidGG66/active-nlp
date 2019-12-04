@@ -25,18 +25,14 @@ class Relspec():
 
 class SemValue():
 
-    def __init__(self):
+    def __init__(self, relspecs):
 
-        self.relspecs = []
+        self.relspecs = relspecs
 
 
     def __copy__(self):
 
-        ret = SemValue()
-
-        ret.relspecs = self.relspecs.copy()
-
-        return ret
+        return SemValue(copy(self.relspecs))
 
 
     def to_print(self):

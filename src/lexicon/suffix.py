@@ -28,18 +28,11 @@ def plu_suff_lex(orth_form):
     syn_val["suffType"] = "plural"
     syn_val["rootForm"] = orth_form
 
-    sem_val = SemValue()
-    sem_val.add_relspec(relspec1)
-    sem_val.add_relspec(relspec2)
+    sem_val = SemValue([relspec1, relspec2])
 
     hooks = {"quant": "x1"}
 
-    ret = Sign()
-    ret.syn_val = syn_val
-    ret.sem_val = [sem_val]
-    ret.hooks = hooks
-
-    return ret
+    return Sign(syn_val, sem_val, hooks)
 
 
 suffixes = [

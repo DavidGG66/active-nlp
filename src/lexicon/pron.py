@@ -4,7 +4,7 @@
 #
 
 from src.common.synval import SynValue
-from src.common.semval import SemValue
+from src.common.semval import SemValue, Relspec
 from src.common.sign import Sign
 
 from src.lexicon.core import add_lex
@@ -13,11 +13,11 @@ def pron_lex():
     """ Make a pronoun """
 
     syn_val = SynValue("PronLex", True)
-    sem_val = SemValue()
+    relspec = Relspec("PronRel", {"PRON": "x1"})
+    sem_val = SemValue([relspec])
+    hooks = {"root": "x1"}
 
-    ret = Sign()
-    ret.syn_val = syn_val
-    ret.sem_val = sem_val
+    ret = Sign(syn_val, sem_val, hooks)
     
     return ret
 

@@ -458,7 +458,7 @@
 	"subcat": [
 	    {"arg": "Object",
 	     "analyses": [
-		 {"cat" "NP",
+		 {"cat": "NP",
 		  "case": "acc"}],
 	     "hooks": {"root": "x3"}}]},
 
@@ -734,6 +734,33 @@
 	    "x4": "x3"}}
 }
 
+"stop"
+
+{
+    1: {"range": [1, 1],
+	"text": "stop",
+	"syn": {"cat": "VP"},
+	"sem": [
+	    {"rel": "Cause",
+	     "rolespecs": {
+		 "CAUSER": "x1",
+		 "CAUSED": "x2",
+		 "_EVENT": "x3"}},
+	    {"rel": "Stop",
+	     "rolespecs": {
+		 "STOPPED": "x4",
+		 "_EVENT": "x2"}}],
+	"hooks": {
+	    "event": "x3",
+	    "subj": "x1"},
+	"subcat": [
+	    {"arg": "Object",
+	     "analyses": [
+		 {"cat": "NP",
+		  "case": "acc"}],
+	     "hooks": {"root": "x4"}}]}
+}
+
 "want to bark"
 
 {
@@ -797,4 +824,66 @@
 	"index_maps": {
 	    "x4": "x1",
 	    "x5": "x2"}}
+}
+
+"rely on the girl"
+
+{
+    1: {"range": [1, 1],
+	"text": "rely",
+	"syn": {"cat": "VP"},
+	"sem": [
+	    {"rel": "Rely",
+	     "rolespecs": {
+		 "RELIER": "x1",
+		 "RELIEDON": "x2",
+		 "_EVENT": "x3"}}],
+	"hooks": {
+	    "event": "x3",
+	    "subj": "x1"},
+	"subcat": [
+	    "arg": "PPObj",
+	    "analyses": [
+		{"cat": "PP",
+		 "pform": "on"}],
+	    "hooks": {"root": "x2"}]},
+    
+    2: {"range": [2, 2],
+	"text": "on",
+	"syn": {"cat": "Prep",
+		"pform": "on"},
+	"hooks": {"root": "x1"},
+	"subcat": [
+	    {"arg": "Object",
+	     "analyses": [
+		 {"cat": "NP",
+		  "case": "acc"}],
+	     "hooks": {"root": "x1"}}]}
+}
+
+"turn on the light"
+
+{
+    1: {"range": [1, 1],
+	"text": "turn",
+	"syn": {"cat": "VP"},
+	"sem": [
+	    {"rel": "TurnOn",
+	     "rolespecs": {
+		 "TURNER": "x1",
+		 "TURNED": "x2",
+		 "_EVENT": "x3"}}],
+	"hooks": {
+	    "event": "x3",
+	    "subj": "x1"},
+	"subcat": [
+	    {"arg": "Object",
+	     "analyses": [
+		 {"cat" "NP",
+		  "case": "acc"}],
+	     "hooks": {"root": "x2"}},
+	    {"arg": "Particle",
+	     "analyses": [
+		 {"cat": "Prep",
+		  "pform": "on"}]}]}
 }
