@@ -9,16 +9,15 @@ from src.common.sign import Sign
 
 from src.lexicon.core import add_lex
 
-def punc_lex(type):
-    """ Make a morpheme break """
+def punc_entry(punc_lex, next_index):
 
+    type, = punc_lex
     syn_val = SynValue("PuncLex", True)
-    sem_val = SemValue([])
+    syn_val["type"] = type
 
-    ret = Sign(syn_val, sem_val, {})
+    return syn_val, [], {}, [], next_index
 
-    return ret
-
+punc_class_table = {"punc:punc": punc_entry}
 
 puncs = [
     (" ", "space"),
@@ -34,4 +33,4 @@ puncs = [
 
 def add_puncs_to_lex(lex, fsa):
     for form, type in puncs:
-        add_lex(form, lex, punc_lex(type), fsa, "punc")
+        add_lex(form, lex, ["punc:punc", type], fsa, "punc")

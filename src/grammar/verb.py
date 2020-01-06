@@ -8,24 +8,44 @@
 #
 
 #  Finite (tensed) semantics
-def finite_sem(tense_rel):
-    return {
-        "relspecs": [
-            {"rel": "EventTemp",
-             "roles": {
+def finite_sem():
+    return [{"rel": "EventTemp",
+             "rolespecs": {
                  "EVENT": "x1",
-                 "TEMP": "x2"}},
-            {"rel": "TempMatch",
-             "roles": {
-                 "TEMP1": "x2",
-                 "TEMP2": "x3"}},
-            {"rel": tense_rel,
-             "roles": {
-                 "TEMP": "x3"}}],
-        "hooks": {
-            "event": "x1",
-            "ref_time": "x3"}}
+                 "TEMP": "x2"}}]
 
+def finite_hooks():
+    return {
+        "event": "x1",
+        "temp": "x2",
+        "tref": "x3"}
+
+def pres_sem():
+
+    relspecs = [
+        {"rel": "TempMatch",
+         "rolespecs": {
+             "TEMP1": "x2",
+             "TEMP2": "x3"}},
+        {"rel": "PresTemp",
+         "rolespecs": {
+             "TEMP": "x3"}}]
+
+    return finite_sem() + relspecs
+
+def past_sem():
+
+    relspecs = [
+        {"rel": "TempMatch",
+         "rolespecs": {
+             "TEMP1": "x2",
+             "TEMP2": "x3"}},
+        {"rel": "PastTemp",
+         "rolespecs": {
+             "TEMP": "x3"}}]
+
+    return finite_sem() + relspecs
+    
 #  Perfect form semantics
 perf_sem = {
     "relspecs": [
@@ -86,19 +106,20 @@ def unary_rule(spec):
     name = spec["name"]
     form = spec["form"]
     sem = spec["sem"]
+    hooks = spec["hooks"]
     analyses = spec["analyses"]
     
     ret = {"name": name,
            "mother": {
                "syn": {"cat": "Verb",
                        "form": form},
-               "sem": sem},
+               "sem": sem,
+               "hooks": hooks},
            "dtrs": [
                {"dtr": "Head",
                 "analyses": analyses}],
            "head": {
-               "dtr": "Head",
-               "hooks": "all"}}
+               "dtr": "Head"}}
 
     return ret
 
@@ -123,6 +144,7 @@ def binary_rule(spec):
     name = spec["name"]
     form = spec["form"]
     sem = spec["sem"]
+    hooks = spec["hooks"]
     root_analyses = spec["root_analyses"]
     suff_analyses = spec["suff_analyses"]
     
@@ -130,15 +152,15 @@ def binary_rule(spec):
            "mother": {
                "syn": {"cat": "Verb",
                        "form": form},
-               "sem": sem},
+               "sem": sem,
+               "hooks": hooks},
            "dtrs": [
                {"dtr": "Head",
                 "analyses": root_analyses},
                {"dtr": "Suff",
                 "analyses": suff_analyses}],
            "head": {
-               "dtr": "Head",
-               "hooks": "all"}}
+               "dtr": "Head"}}
 
     return ret
 
@@ -152,6 +174,9 @@ def finite_binary_rule(spec):
     ret["mother"]["syn"]["tense"] = spec["tense"]
     ret["mother"]["syn"]["agr"] = spec["agr"]
 
+    ret["dtrs"][0]["hooks"] = {"event": "x1"}
+    ret["dtrs"][1]["hooks"] = {"temp": "x2"}
+    
     return ret
 
 
@@ -172,7 +197,6 @@ def passivize(rule):
         "subj": ["*Subj"]}
 
     return rule
-
     
 verb_lex_rules = [
 
@@ -187,7 +211,8 @@ verb_lex_rules = [
          "agr": {
              "sg": "-",
              "pers": "any"},
-         "sem": finite_sem("PresTemp"),
+         "sem": pres_sem(),
+         "hooks": finite_hooks(),
          "analyses": [
              reg_lex_analysis("bare", "irrPlu"),
              lex_analysis("plPres")]}),
@@ -197,8 +222,9 @@ verb_lex_rules = [
          "tense": "present",
          "agr": {
              "sg": "+",
-             "pers": 1},
-         "sem": finite_sem("PresTemp"),
+             "pers": "1"},
+         "sem": pres_sem(),
+         "hooks": finite_hooks(),
          "analyses": [
              reg_lex_analysis("bare", "irr1st"),
              lex_analysis("1sgPres")]}),
@@ -206,7 +232,8 @@ verb_lex_rules = [
     unary_rule(
         {"name": "Verb[inf] -> VerbLex[bare]",
          "form": "infinitive",
-         "sem": None,
+         "sem": [],
+         "hooks": {},
          "analyses": [lex_analysis("bare")]}),
     
 #
@@ -219,16 +246,28 @@ verb_lex_rules = [
          "agr": {
              "sg": "+",
              "pers": "3"},
-         "sem": finite_sem("PresTemp"),
+         "sem": pres_sem(),
+         "hooks": finite_hooks(),
          "analyses": [lex_analysis("3sgPres")]}),
 
+    finite_unary_rule(
+        {"name": "Verb[tense: past] -> VerbLex[past]",
+         "tense": "past",
+         "agr": {
+             "sg": "any",
+             "pers": "any"},
+         "sem": past_sem,
+         "hooks": finite_hooks(),
+         "analyses": [lex_analysis("past")]}),
+    
     finite_unary_rule(
         {"name": "Verb[sg: +, tense: past] -> VerbLex[sgPast]",
          "tense": "past",
          "agr": {
              "sg": "+",
              "pers": "any"},
-         "sem": finite_sem("PastTemp"),
+         "sem": past_sem,
+         "hooks": finite_hooks(),
          "analyses": [lex_analysis("sgPast")]}),
 
     finite_unary_rule(
@@ -237,19 +276,21 @@ verb_lex_rules = [
          "agr": {
              "sg": "-",
              "pers": "any"},
-         "sem": finite_sem("PastTemp"),
+         "sem": past_sem(),
+         "hooks": finite_hooks(),
          "analyses": [lex_analysis("plPast")]}),
 
     unary_rule(
         {"name": "Verb[perf] -> VerbLex[pastPart]",
          "form": "perfect",
          "sem": perf_sem,
+         "hooks": {},
          "analyses": [lex_analysis("pastPart")]}),
     
     {"name": "Verb[passive] -> VerbLex[pastPart]",
      "mother": {
          "syn": {"cat": "Verb",
-                 "form": "passivePart"},
+                 "form": "passive"},
          "subcat": {
              "obj": None,
              "preps": {
@@ -279,8 +320,9 @@ verb_lex_rules = [
          "agr": {
              "sg": "+",
              "pers": "3"},
-         "sem": finite_sem("PresTemp"),
-         "root_analyses": [root_lex_analysis()],
+         "sem": finite_sem(),
+         "hooks": finite_hooks(),
+         "root_analyses": [root_lex_analysis("irr3ps")],
          "suff_analyses": [suff_lex_analysis("3ps")]}),
 
     finite_binary_rule(
@@ -289,7 +331,8 @@ verb_lex_rules = [
          "agr": {
              "sg": "any",
              "pers": "any"},
-         "sem": finite_sem("PastTemp"),
+         "sem": finite_sem(),
+         "hooks": {},
          "root_analyses": [reg_root_lex_analysis("irrPast")],
          "suff_analyses": [suff_lex_analysis("past")]}),
 
@@ -297,14 +340,16 @@ verb_lex_rules = [
         {"name": "Verb[perf] -> VerbLex[bare] Suff[ed]",
          "form": "perfect",
          "sem": perf_sem,
+         "hooks": {},
          "root_analyses": [reg_root_lex_analysis("irrPerf")],
          "suff_analyses": [suff_lex_analysis("past")]}),
 
     passivize(
         binary_rule(
             {"name": "Verb[passive] -> VerbLex[bare] Suff[ed]",
-             "form": "passivePart",
-             "sem": None,
+             "form": "passive",
+             "sem": [],
+             "hooks": {},
              "root_analyses": [reg_root_lex_analysis("irrPerf")],
              "suff_analyses": [suff_lex_analysis("past")]})),
 
@@ -312,23 +357,22 @@ verb_lex_rules = [
      "mother": {
          "syn": {
              "cat": "Verb",
-             "form": "passivePart"},
-         "sem": {
-             "relspecs": [
-                 {"rel": "PfvToImpfv",
-                  "roles": {
-                      "IMPERF": "x1",
-                      "PERF": "x2"}},
-                 {"rel": "PfvTime",
-                  "roles": {
-                      "EVENT": "x2",
-                      "TIME": "x3"}},
-                 {"rel": "TimeInSpan",
-                  "roles": {
-                      "TIME": "x3",
-                      "SPAN": "__ref__"}}],
-             "hooks": {"event": "x1"}},
+             "form": "progressive"},
+         "sem": [
+             {"rel": "PfvToImpfv",
+              "roles": {
+                  "IMPERF": "x1",
+                  "PERF": "x2"}},
+             {"rel": "PfvTime",
+              "roles": {
+                  "EVENT": "x2",
+                  "TIME": "x3"}},
+             {"rel": "TimeInSpan",
+              "roles": {
+                  "TIME": "x3",
+                  "SPAN": "__ref__"}}],
          "hooks": {
+             "event": "x1",
              "head": ["*Subj"],
              "subj": None}},
      "dtrs": [
@@ -344,8 +388,7 @@ verb_lex_rules = [
               {"cat": "SuffLex",
                "suffType": "prog"}]}],
      "head": {
-         "dtr": "Head",
-         "hooks": "all"}
+         "dtr": "Head"}
     }
 ]
 

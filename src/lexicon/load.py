@@ -8,9 +8,10 @@ from src.common.sign import Sign
 from src.morph.fst import FST
 from src.lexicon.det import add_dets_to_lex, det_class_table
 from src.lexicon.noun import add_nouns_to_lex, noun_class_table
-from src.lexicon.pron import add_prons_to_lex
-from src.lexicon.punc import add_puncs_to_lex
-from src.lexicon.suffix import add_suffixes_to_lex
+from src.lexicon.prep import add_preps_to_lex, prep_class_table
+from src.lexicon.pron import add_prons_to_lex, pron_class_table
+from src.lexicon.punc import add_puncs_to_lex, punc_class_table
+from src.lexicon.suffix import add_suffixes_to_lex, suff_class_table
 from src.lexicon.verb import add_verbs_to_lex, verb_class_table
         
 lexicon = {}
@@ -18,6 +19,7 @@ lex_fsa = FST()
 
 add_nouns_to_lex(lexicon, lex_fsa)
 add_dets_to_lex(lexicon, lex_fsa)
+add_preps_to_lex(lexicon, lex_fsa)
 add_prons_to_lex(lexicon, lex_fsa)
 add_puncs_to_lex(lexicon, lex_fsa)
 add_suffixes_to_lex(lexicon, lex_fsa)
@@ -26,6 +28,10 @@ add_verbs_to_lex(lexicon, lex_fsa)
 lex_class_tables = [
     det_class_table,
     noun_class_table,
+    prep_class_table,
+    pron_class_table,
+    punc_class_table,
+    suff_class_table,
     verb_class_table]
 
 lex_class_table = {k: v for table in lex_class_tables for k, v in table.items()}

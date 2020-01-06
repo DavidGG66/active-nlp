@@ -1,7 +1,7 @@
 # Determiner lexicon
 
 from src.common.synval import SynValue
-from src.common.semval import Relspec, SemValue
+from src.common.semval import Relspec
 from src.common.sign import Sign
 
 from src.lexicon.core import add_lex, get_next_index, add_role

@@ -1,0 +1,80 @@
+[
+    "Free forms",
+
+    "The syntactic categories made up of a free lexical form",
+    
+    {"lex_form": "bare [irrPlu: -]",
+     "verb_form": "present plural",
+     "examples": ["(we/you/they) cook, eat, have, *be"]},
+
+    {"lex_form": "bare [irr1st: -]",
+     "verb_form": "present 1st-singular",
+     "examples": ["(I) cook, eat, have, *be"]},
+
+    {"lex_form": "plPres",
+     "verb_form": "present plural",
+     "examples": ["(we/you/they) are"]},
+
+    {"lex_form": "1sgPres",
+     "verb_form": "present 1st-singular",
+     "examples": ["(I) am"]},
+
+    {"lex_form": "3sgPres",
+     "verb_form": "present 3rd-singular",
+     "examples": ["(he/she/it) has", "(she/he/it) is"]},
+
+    {"lex_form": "past",
+     "verb_form": "past",
+     "examples": ["ate", "had"]},
+
+    {"lex_form": "sgPast",
+     "verb_form": "past singular",
+     "examples": ["was"]},
+
+    {"lex_form": "plPast",
+     "verb_form": "past plural",
+     "examples": ["were"]},
+
+    {"lex_form": "bare",
+     "verb_form": "infinitive",
+     "examples": ["(to) cook", "eat", "have", "be"]},
+
+    {"lex_form": "pastPart",
+     "verb_form": "perfect",
+     "examples": ["(have) eaten", "had", "been"]},
+
+    {"lex_form": "pastPart",
+     "verb_form": "passive",
+     "examples": ["(were) eaten", "had"]}
+]
+
+[
+    "Bound Forms",
+
+    "The syntactic categories made up of a lexical form and a suffix"
+
+    {"lex_form": "bare [irr3ps: -]",
+     "suff_type": "3ps",
+     "verb_form": "present 3rd-singular",
+     "examples": ["(she/he/it) cooks, eats, *haves, *bes"]},
+
+    {"lex_form": "bare [irrPast: -]",
+     "suff_type": "past",
+     "verb_form": "past",
+     "examples": ["cooked, *eated, *haved, *beed"]},
+
+    {"lex_form": "bare [irrPerf: -]",
+     "suff_type": "past",
+     "verb_form": "perfect",
+     "examples": ["(have) cooked, *eated, *haved, *beed"]},
+
+    {"lex_form": "bare [irrPerf: -]",
+     "suff_type": "past",
+     "verb_form": "passive",
+     "examples": ["(were) cooked, *eated, *haved, *beed"]},
+
+    {"lex_form": "bare",
+     "suff_type": "prog",
+     "verb_form": "progressive",
+     "examples": ["cooking, eating, having, being"]}
+]

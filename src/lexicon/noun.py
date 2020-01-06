@@ -4,10 +4,9 @@
 #
 
 from src.common.synval import SynValue
-from src.common.semval import Relspec, SemValue
-from src.common.sign import Sign
+from src.common.semval import Relspec
 
-from src.lexicon.core import add_lex, add_role
+from src.lexicon.core import add_lex, add_event, add_head
 
 def noun_syn_val():
     syn_val = SynValue("NounLex", True)
@@ -26,11 +25,9 @@ def noun_entry(rel, role, next_index):
 
     syn_val = noun_syn_val()
     relspec = Relspec(rel, {})
-    event, next_index = add_role(next_index, relspec, "_EVENT")
-    head, next_index = add_role(next_index, relspec, role)
-    hooks = {
-        "head": head,
-        "event": event}
+    hooks = {}
+    next_index = add_event(next_index, relspec, hooks)
+    next_index = add_head(next_index, relspec, role, hooks)
 
     return syn_val, relspec, hooks, [], next_index
 

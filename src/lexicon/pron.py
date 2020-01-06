@@ -7,87 +7,96 @@ from src.common.synval import SynValue
 from src.common.semval import SemValue, Relspec
 from src.common.sign import Sign
 
-from src.lexicon.core import add_lex
+from src.lexicon.core import add_lex, add_role
 
-def pron_lex():
-    """ Make a pronoun """
+def pron_entry(next_index):
 
     syn_val = SynValue("PronLex", True)
-    relspec = Relspec("PronRel", {"PRON": "x1"})
-    sem_val = SemValue([relspec])
-    hooks = {"root": "x1"}
+    relspec = Relspec("PronRel", {})
+    root, next_index = add_role(next_index, relspec, "PRON")
 
-    ret = Sign(syn_val, sem_val, hooks)
+    return syn_val, relspec, {"root": root}, [], next_index
+
+
+def pers_pron_entry(pron_lex, next_index):
+
+    pers, sg, case = pron_lex
+    syn_val, relspec, hooks, subcat, next_index = pron_entry(next_index)
+    syn_val["personal"] = "+"
+    syn_val["pers"] = pers
+    syn_val["agr"] = {"sg": sg}
+    syn_val["case"] = case
+
+    return syn_val, relspec, hooks, subcat, next_index
+
+
+def animate_pron_entry(pron_lex, next_index):
+
+    pers, sg, gen, case = pron_lex
+    syn_val, relspec, hooks, subcat, next_index = pers_pron_entry([pers, sg, case], next_index)
+    syn_val["animate"] = "+"
+    syn_val["gender"] = gen
+
+    return syn_val, [relspec], hooks, subcat, next_index
+
+
+def inanimate_pron_entry(pron_lex, next_index):
+
+    sg, case = pron_lex
+    syn_val, relspec, hooks, subcat, next_index = pers_pron_entry(["3", sg, case], next_index)
+    syn_val["animate"] = "-"
+
+    return syn_val, [relspec], hooks, subcat, next_index
+
+
+def dim_pron_entry(dim, next_index):
+
+    syn_val, relspec, hooks, subcat, next_index = pron_entry()
+    syn_val["indexical"] = "+"
+    syn_val["dim"] = dim
+
+    return syn_val, relspec, hooks, subcat, next_index
     
-    return ret
+
+def quant_pron_entry(pron_lex, next_index):
+
+    dim, quant = pron_lex
+    syn_val, relspec, hooks, subcat, next_index = dim_pron_entry(dim, next_index)
+    syn_val["quant"] = quant
+
+    return syn_val, [relspec], hooks, subcat, next_index
 
 
-def pers_pron_lex(pers, sg, case):
-    """ Make a personal pronoun """
-
-    ret = pron_lex()
-
-    ret.syn_val["personal"] = "+"
-    ret.syn_val["pers"] = pers
-    ret.syn_val["agr"] = {"sg": sg}
-    ret.syn_val["case"] = case
-
-    return ret
-
-
-def animate_pron_lex(pers, sg, gen, case):
-    """ Make an animate personal pronoun, like 'me' """
-
-    ret = pers_pron_lex(pers, sg, case)
-    ret.syn_val["animate"] = "+"
-    ret.syn_val["gender"] = gen
-
-    return ret
-
-def inanimate_pron_lex(sg, case):
-    """ Make an inanimate personal pronoun, like 'it' """
-
-    ret = pers_pron_lex("3", sg, case)
-    ret.syn_val["animate"] = "-"
-
-    return ret
-    
-def dim_pron_lex(dim):
-    """ Make a pronoun on the geo, pers or temp dimension """
-
-    ret = pron_lex()
-    ret.syn_val["indexical"] = "+"
-    ret.syn_val["dim"] = dim
-
-    return ret
-
-def quant_pron_lex(dim, quant):
-    """ Make a quantified dimension pronoun, like 'everybody' """
-
-    ret = dim_pron_lex(dim)
-    ret.syn_val["quant"] = quant
-    
-    return ret
-
-def index_pron_lex(dim, loc):
+def index_pron_entry(pron_lex, next_index):
     """ Make a located dimension pronoun, like 'then' """
 
-    ret = dim_pron_lex(dim)
-    ret.syn_val["loc"] = loc
+    dim, loc = pron_lex
+    syn_val, relspec, hooks, subcat, next_index = dim_pron_entry(dim, next_index)
+    syn_val["loc"] = loc
 
-    return ret
+    return syn_val, [relspec], hooks, subcat, next_index
 
-def wh_pron_lex(wh_type, animate, case):
-    """ Make a WH pronoun """
 
-    ret = pron_lex()
-    ret.syn_val["wh_type"] = wh_type
-    ret.syn_val["case"] = case
-    ret.syn_val["agr"] = {
+def wh_pron_entry(pron_lex, next_index):
+
+    wh_type, animate, case = pron_lex
+    syn_val, relspec, hooks, subcat, next_index = pron_entry()
+    syn_val["wh_type"] = wh_type
+    syn_val["animate"] = animate
+    syn_val["case"] = case
+    syn_val["agr"] = {
         "sg": "+",
         "plu": "-"}
 
-    return ret
+    return syn_val, [relspec], hooks, subcat, next_index
+
+
+pron_class_table = {
+    "pron:animate": animate_pron_entry,
+    "pron:inanimate": inanimate_pron_entry,
+    "pron:quant": quant_pron_entry,
+    "pron:index": index_pron_entry,
+    "pron:wh": wh_pron_entry}
 
 animate_prons = [
     ("i", "1", "+", "any", "nom"),
@@ -154,12 +163,12 @@ def add_prons_to_lex(lex, fsa):
         add_lex(form, lex, syn_sem, fsa, "pron")
 
     for form, pers, sg, gen, case in animate_prons:
-        add_pron(form, animate_pron_lex(pers, sg, gen, case))
+        add_lex(form, lex, ["pron:animate", pers, sg, gen,case], fsa, "pron")
     for form, sg, case in inanimate_prons:
-        add_pron(form, inanimate_pron_lex(sg, case))
+        add_lex(form, lex, ["pron:inanimate", sg, case], fsa, "pron")
     for form, dim, quant in quant_prons:
-        add_pron(form, quant_pron_lex(dim, quant))
+        add_lex(form, lex, ["pron:quant", dim, quant], fsa, "pron")
     for form, dim, loc in index_prons:
-        add_pron(form, index_pron_lex(dim, loc))
+        add_lex(form, lex, ["pron:index", dim, loc], fsa, "pron")
     for form, wh_type, animate, case in wh_prons:
-        add_pron(form, wh_pron_lex(wh_type, animate, case))
+        add_lex(form, lex, ["pron:wh", wh_type, animate, case], fsa, "pron")

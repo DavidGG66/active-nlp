@@ -4,45 +4,68 @@
 #
 
 from src.common.synval import SynValue
-from src.common.semval import Relspec, SemValue
+from src.common.semval import Relspec
 from src.common.sign import Sign
 
-from src.lexicon.core import add_lex
+from src.lexicon.core import add_lex, add_role
 
-def plu_suff_lex(orth_form):
 
-    rel1 = "AbsVal"
-    roles1 = {
-        "NODE": "x1",
-        "VAL": "x2"}
-
-    rel2 = "GreaterThan"
-    roles2 = {
-        "GREATER": "x2",
-        "LESS": 1}
-
-    relspec1 = Relspec(rel1, roles1)
-    relspec2 = Relspec(rel2, roles2)
-    
+def suff_syn_value(suff_type, orth_form):
     syn_val = SynValue("SuffLex", True)
-    syn_val["suffType"] = "plural"
+    syn_val["suffType"] = suff_type
     syn_val["rootForm"] = orth_form
 
-    sem_val = SemValue([relspec1, relspec2])
+    return syn_val
 
-    hooks = {"quant": "x1"}
+def plu_suff_entry(plu_entry, next_index):
 
-    return Sign(syn_val, sem_val, hooks)
+    orth_form, = plu_entry
+    syn_val = suff_syn_value("plural", orth_form)
+
+    relspec1 = Relspec("AbsVal", {})
+    quant, next_index = add_role(next_index, relspec1, "NODE")
+    val, next_index = add_role(next_index, relspec1, "VAL")
+
+    relspec2 = Relspec("GreaterThan", {"GREATER": val, "LESS": 1})
+
+    hooks = {"quant": quant}
+
+    return syn_val, [relspec1, relspec2], hooks, [], next_index
 
 
-suffixes = [
+def past_suff_entry(past_entry, next_index):
+
+    syn_val = suff_syn_value("past", "preVowel")
+
+    relspec1 = Relspec("TempMatch", {})
+    temp, next_index = add_role(next_index, relspec1, "TEMP1")
+    tref, next_index = add_role(next_index, relspec1, "TEMP2")
+    relspec2 = Relspec("PastTemp", {"TEMP": tref})
+    relspecs = [relspec1, relspec2]
+    
+    hooks = {
+        "temp": temp,
+        "tref": tref}
+    subcat = []
+
+    return syn_val, relspecs, hooks, subcat, next_index
+
+
+suff_class_table = {
+    "suff:plural": plu_suff_entry,
+    "suff:past": past_suff_entry}
+
+plural_suffixes = [
     ("es", "takesEs"),
     ("s", "takesS")]
 
+past_suffixes = [
+    "ed"]
 
 def add_suffixes_to_lex(lex, fsa):
-    def add_suff(form, synSem):
-        add_lex(form, lex, synSem, fsa, "suffix")
 
-    for form, orth_form in suffixes:
-        add_suff(form, plu_suff_lex(orth_form))
+    for form, orth_form in plural_suffixes:
+        add_lex(form, lex, ["suff:plural", orth_form], fsa, "suffix")
+
+    for form in past_suffixes:
+        add_lex(form, lex, ["suff:past"], fsa, "suffix")
