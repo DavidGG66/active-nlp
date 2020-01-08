@@ -322,7 +322,7 @@ verb_lex_rules = [
              "pers": "3"},
          "sem": finite_sem(),
          "hooks": finite_hooks(),
-         "root_analyses": [root_lex_analysis("irr3ps")],
+         "root_analyses": [reg_root_lex_analysis("irr3ps")],
          "suff_analyses": [suff_lex_analysis("3ps")]}),
 
     finite_binary_rule(

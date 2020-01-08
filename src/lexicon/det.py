@@ -40,9 +40,15 @@ def fixed_det_entry(det_lex, next_index):
     val_roles = {
         "NODE": hooks["quant"],
         "VAL": 1}
-    val_relspec = Relspec("AbsVal", val_roles)
+    val_relspec = Relspec(rel, val_roles)
 
     return syn_val, [relspec, val_relspec], hooks, subcat, next_index
+
+
+def abs_det_entry(det_lex, next_index):
+
+    sg, plu, df, width, val = det_lex
+    return fixed_det_entry([sg, plu, df, width, "AbsVal", val], next_index)
 
 
 def rel_det_entry(det_lex, next_index):
@@ -60,11 +66,11 @@ def open_det_entry(det_lex, next_index):
     return syn_val, [relspec], hooks, subcat, next_index
 
 det_class_table = {
-    "det:relative": rel_det_entry,
+    "det:rel": rel_det_entry,
     "det:open": open_det_entry,
-    "det:fixed": fixed_det_entry}
+    "det:abs": abs_det_entry}
 
-fixed_dets = [("a", "+", "-", "indef", "narrow", "AbsVal", 1)]
+abs_dets = [("a", "+", "-", "indef", "narrow", 1)]
 
 rel_dets = [
     ("all", "any", "+", "narrow", 1),
@@ -78,8 +84,8 @@ open_dets = [
     ("those", "-", "+", "distal", "narrow")]
 
 def add_dets_to_lex(lex, fsa):
-    for form, sg, plu, df, width, rel, val in fixed_dets:
-        add_lex(form, lex, ["det:fixed", sg, plu, df, width, rel, val], fsa, "det")
+    for form, sg, plu, df, width, val in abs_dets:
+        add_lex(form, lex, ["det:abs", sg, plu, df, width, val], fsa, "det")
     for form, sg, plu, width, val in rel_dets:
         add_lex(form, lex, ["det:rel", sg, plu, width, val], fsa, "det")
     for form, sg, plu, df, width in open_dets:
