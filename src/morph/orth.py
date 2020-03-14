@@ -5,6 +5,7 @@
 
 from functools import reduce
 from src.morph.fst import FST, State, Arc, read_fst, and_fst, or_fst, non_det_or_fst
+from src.common.print import p
 
 vowel = "aeiouy"
 vowel_no_y = "aeiou"
@@ -242,6 +243,7 @@ free_data = {
         0: {0: "abcdefghijklmnopqrstuvwxyz"}}}
 
 free = read_fst(free_data)
+free1 = read_fst(free_data)
 
 punc_data = {
     "finals": {1: {"punc"}},
@@ -265,6 +267,8 @@ takes_es = reduce(or_fst, [
 takes_s = reduce(and_fst, [
     t_s_y_to_i,
     t_s_sib_end])
+
+p(free)
 
 full = reduce(
     non_det_or_fst,

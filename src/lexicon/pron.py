@@ -51,7 +51,7 @@ def inanimate_pron_entry(pron_lex, next_index):
 
 def dim_pron_entry(dim, next_index):
 
-    syn_val, relspec, hooks, subcat, next_index = pron_entry()
+    syn_val, relspec, hooks, subcat, next_index = pron_entry(next_index)
     syn_val["indexical"] = "+"
     syn_val["dim"] = dim
 
@@ -80,7 +80,7 @@ def index_pron_entry(pron_lex, next_index):
 def wh_pron_entry(pron_lex, next_index):
 
     wh_type, animate, case = pron_lex
-    syn_val, relspec, hooks, subcat, next_index = pron_entry()
+    syn_val, relspec, hooks, subcat, next_index = pron_entry(next_index)
     syn_val["wh_type"] = wh_type
     syn_val["animate"] = animate
     syn_val["case"] = case
@@ -137,12 +137,16 @@ quant_prons = [
     ("somewhere", "geo", "exist"),
     ("everywhere", "geo", "univ"),
     ("anywhere", "geo", "negpol"),
+    ("nowhere", "geo", "none"),
     ("somebody", "pers", "exist"),
     ("someone", "pers", "exist"),
     ("everybody", "pers", "univ"),
     ("everyone", "pers", "univ"),
     ("anybody", "pers", "negpol"),
-    ("anyone", "pers", "negpol")]
+    ("anyone", "pers", "negpol"),
+    ("nobody", "pers", "none"),
+    ("always", "temp", "univ"),
+    ("never", "temp", "none")]
 
 index_prons = [
     ("here", "geo", "prox"),

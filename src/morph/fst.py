@@ -3,6 +3,7 @@
 # src.morph.fst
 #
 
+from copy import copy, deepcopy
 from src.common.utils import first_filter
 
 class Arc():
@@ -100,6 +101,7 @@ class State():
 
     
 class FST():
+    """ Finite State Transducer """
 
     def __init__(self):
         self.initial = 0
@@ -137,7 +139,100 @@ class FST():
 
     def arc_list(self, state):
         return self.states[state].arc_list()
+
+    def analyze_fsa_character(self, state, char):
+        """ Analyze a single letter with this FSA """
+        ret = []
+        for target, arc in self.states[state].arc_map.items():
+            if char in arc.get_units():
+                ret.append(target)
+        return ret
+
+    def analyze_fsa_characters(self, state, chars):
+        """ Analyze a sequence of characters, return the list of resulting states """
+        agenda = [state]
+        while agenda and chars:
+            char = chars[0]
+            chars = chars[1:]
+            new_agenda = []
+            for source in agenda:
+                new_agenda.extend(self.analyze_fsa_character(source, char))
+            agenda = new_agenda
+        return agenda
+
+    class AzAgendum():
+        """ An agendum used for analyzing a string with an FST """
+
+        def __init__(self, state, result):
+            self.state = state
+            self.result = result
     
+    def analyze_eps_arcs(self, agenda):
+
+        ret = list(agenda)
+
+        while agenda:
+            new_agenda = []
+            for agendum in agenda:
+                state = agendum[0]
+                results = list(agendum[1])
+                for target, arc in self.states[state].arc_map.items():
+                    for pair in arc.get_pairs():
+                        if pair[1] == 'epsilon':
+                            results = list(agendum[1])
+                            results.append(pair[0])
+                            new_agenda.append((target, results))
+            ret.extend(new_agenda)
+            agenda = new_agenda
+
+        return ret
+        
+    def analyze_character(self, state, char):
+        """ Analyze a single letter with this FST """
+
+        ret = []
+        for target, arc in self.states[state].arc_map.items():
+            if char in arc.get_units():
+                ret.append((target, [char]))
+            for pair in arc.get_pairs():
+                if char == pair[1]:
+                    new_char = pair[0]
+                    if new_char == 'epsilon':
+                        ret.append((target, []))
+                    else:
+                        ret.append((target, [new_char]))
+
+        return self.analyze_eps_arcs(ret)
+        
+    def analyze(self, utt):
+        """ Transduce a string from surface to deep """
+        agenda = [self.AzAgendum(self.initial, "")]
+
+        utt_to_go = utt
+
+        while utt_to_go and agenda:
+            char = utt_to_go[0]
+            utt_to_go = utt_to_go[1:]
+
+            new_agenda = []
+            for agendum in agenda:
+                updates = self.analyze_character(agendum.state, char)
+                for update in updates:
+                    new_agenda.append(self.AzAgendum(update[0], agendum.result + "".join(update[1])))
+            agenda = new_agenda
+
+        ret = {}
+
+        for agendum in agenda:
+            state = agendum.state
+            result = agendum.result
+            if state in self.finals:
+                tags = set(self.finals[state])
+                if result in ret:
+                    ret[result].update(tags)
+                else:
+                    ret[result] = tags
+        return ret
 
 def word_fst(word, tag):
     """ Make an FST that recognizes a single word with the given tag """
@@ -172,6 +267,7 @@ class StateTable():
 
 
 def read_fst(fst_data):
+    """ Create an FST from a data structure, as found in src.morph.orth """
     ret = FST()
     for k,v in fst_data.items():
         if k == "finals":
@@ -533,6 +629,9 @@ def fix_initial_loop(fst):
 def non_det_or_fst(fst1, fst2):
     """ The same as OrFST, but allow more non-determinism """
 
+    fst1 = deepcopy(fst1)
+    fst1.finals = copy(fst1.finals)
+    
     ret = FST()
     state_table = StateTable()
 
@@ -548,104 +647,4 @@ def non_det_or_fst(fst1, fst2):
         ret.copy_arc(0, new_target, arc)
 
     ret.next = state_table.next_state
-    return ret
-
-class AzAgendum():
-    """ An agendum used for analyzing a string with an FST """
-
-    def __init__(self, state, result):
-        self.state = state
-        self.result = result
-
-
-def analyze_eps_arcs(fst, agenda):
-
-    ret = list(agenda)
-
-    while agenda:
-        new_agenda = []
-        for agendum in agenda:
-            state = agendum[0]
-            results = list(agendum[1])
-            for target, arc in fst.states[state].arc_map.items():
-                for pair in arc.get_pairs():
-                    if pair[1] == 'epsilon':
-                        results = list(agendum[1])
-                        results.append(pair[0])
-                        new_agenda.append((target, results))
-        ret.extend(new_agenda)
-        agenda = new_agenda
-
-    return ret
-
-        
-def analyze_character(fst, state, char):
-    """ Analyze a single letter with an FST """
-
-    ret = []
-    for target, arc in fst.states[state].arc_map.items():
-        if char in arc.get_units():
-            ret.append((target, [char]))
-        for pair in arc.get_pairs():
-            if char == pair[1]:
-                new_char = pair[0]
-                if new_char == 'epsilon':
-                    ret.append((target, []))
-                else:
-                    ret.append((target, [new_char]))
-
-    return analyze_eps_arcs(fst, ret)
-
-def analyze_fsa_character(fsa, state, char):
-    """ Analyze a single letter with an FSA """
-    ret = []
-    for target, arc in fsa.states[state].arc_map.items():
-        if char in arc.get_units():
-            ret.append(target)
-    return ret
-
-
-def analyze_fsa_characters(fsa, state, chars):
-    """ Analyze a sequence of characters, return the list of resulting states """
-    agenda = [state]
-    while agenda and chars:
-        char = chars[0]
-        chars = chars[1:]
-        new_agenda = []
-        for source in agenda:
-            new_agenda.extend(analyze_fsa_character(fsa, source, char))
-        agenda = new_agenda
-    return agenda
-
-    
-def analyze(fst, utt):
-    """ Transduce a string from surface to deep """
-    agenda = [AzAgendum(fst.initial, "")]
-
-    utt_to_go = utt
-    seen = 0
-
-    while utt_to_go and agenda:
-        char = utt_to_go[0]
-        utt_to_go = utt_to_go[1:]
-
-        new_agenda = []
-        for agendum in agenda:
-            seen += 1
-            updates = analyze_character(fst, agendum.state, char)
-            for update in updates:
-                new_agenda.append(AzAgendum(update[0], agendum.result + "".join(update[1])))
-        agenda = new_agenda
-
-    ret = {}
-
-    for agendum in agenda:
-        state = agendum.state
-        result = agendum.result
-        if state in fst.finals:
-            tags = set(fst.finals[state])
-            if result in ret:
-                ret[result].update(tags)
-            else:
-                ret[result] = tags
     return ret

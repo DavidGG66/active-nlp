@@ -6,7 +6,7 @@
 from src.common.synval import SynValue
 from src.common.semval import Relspec, SemValue
 
-from src.lexicon.core import add_lex, get_next_index, add_role, add_subj, add_obj, add_prep, add_vp, add_event
+from src.lexicon.core import add_lex, get_next_index, add_role, add_subj, add_obj, add_obj_subcat, add_prep, add_vp, add_event
 
 def verb_syn_val(vform, irr):
     syn_val = SynValue("VerbLex", True)
@@ -53,6 +53,7 @@ def copula_verb_entry(verb_lex, next_index):
     vform, = verb_lex
     syn_val = SynValue("VerbLex", True)
     syn_val["vform"] = vform
+    syn_val["copula"] = "+"
 
     if vform == "bare":
         syn_val["irrPlu"] = "+"
@@ -264,6 +265,7 @@ def subj_equi_verb_entry(verb_lex, vform, irr, next_index):
     rel, subj_role, obj_role = verb_lex
     syn_val, relspec, hooks, subcat, next_index = verb_entry(rel, vform, irr, next_index)
     next_index = add_subj(next_index, relspec, subj_role, hooks)
+    subj = hooks["subj"]
     next_index = add_vp(next_index, relspec, obj_role, "infinitive", subcat, subj)
     
     return syn_val, [relspec], hooks, subcat, next_index
@@ -276,7 +278,44 @@ def irreg_subj_equi_verb_entry(verb_lex, next_index):
 
     return irr(subj_equi_verb_entry, verb_lex, next_index)
 
+def obj_equi_verb_entry(verb_lex, vform, irr, next_index):
 
+    rel, subj_role, obj_role, vp_role = verb_lex
+    syn_val, relspec, hooks, subcat, next_index = verb_entry(rel, vform, irr, next_index)
+    next_index = add_subj(next_index, relspec, subj_role, hooks)
+    obj, next_index = add_role(next_index, relspec, obj_role)
+    add_obj_subcat(subcat, obj, False)
+    next_index = add_vp(next_index, relspec, vp_role, "infinitive", subcat, obj)
+
+    return syn_val, [relspec], hooks, subcat, next_index
+
+def reg_obj_equi_verb_entry(verb_lex, next_index):
+
+    return reg(obj_equi_verb_entry, verb_lex, next_index)
+
+def irreg_obj_equi_verb_entry(verb_lex, next_index):
+
+    return irr(obj_equi_verb_entry, verb_lex, next_index)
+
+def obj_raising_verb_entry(verb_lex, vform, irr, next_index):
+
+    rel, subj_role, vp_role = verb_lex
+    syn_val, relspec, hooks, subcat, next_index = verb_entry (rel, vform, irr, next_index)
+    next_index = add_subj(next_index, relspec, subj_role, hooks)
+    obj, next_index = get_next_index(next_index)
+    add_obj_subcat(subcat, obj, False)
+    next_index = add_vp(next_index, relspec, vp_role, "infinitive", subcat, obj)
+
+    return syn_val, [relspec], hooks, subcat, next_index
+
+def reg_obj_raising_verb_entry(verb_lex, next_index):
+
+    return reg(obj_raising_verb_entry, verb_lex, next_index)
+
+def irreg_obj_raising_verb_entry(verb_lex, next_index):
+
+    return irr(obj_raising_verb_entry, verb_lex, next_index)
+    
 verb_class_table = {
     "verb:intransitive": reg_intrans_verb_entry,
     "verb:irr-intransitive": irreg_intrans_verb_entry,
@@ -298,6 +337,9 @@ verb_class_table = {
     "verb:irr-custom-subj-raising": irreg_custom_subj_raising_verb_entry,
     "verb:subj-equi": reg_subj_equi_verb_entry,
     "verb:irr-subj-equi": irreg_subj_equi_verb_entry,
+    "verb:object-equi": reg_obj_equi_verb_entry,
+    "verb:irr-object-equi": irreg_obj_equi_verb_entry,
+    "verb:object-raising": reg_obj_raising_verb_entry,
     "verb:copula": copula_verb_entry}
 
 
@@ -373,7 +415,7 @@ def add_irr_trans_verbs_to_lex(lex, fsa):
     for bare, past, ppart, rel, subj_role, obj_role in irr_trans_verbs:
         add_lex(bare, lex, ["verb:irr-transitive", rel, subj_role, obj_role, "bare"], fsa, "verb")
         add_lex(past, lex, ["verb:irr-transitive", rel, subj_role, obj_role, "past"], fsa, "verb")
-        add_lex(ppart, lex, ["verb:irr-transitive", rel, subj_role, obj_role, "ppart"], fsa, "verb")
+        add_lex(ppart, lex, ["verb:irr-transitive", rel, subj_role, obj_role, "pastPart"], fsa, "verb")
     
 
 opt_trans_verbs = [
@@ -489,6 +531,37 @@ def add_irr_custom_subj_raising_verbs_to_lex(lex, fsa):
         add_lex(ppart, lex, ["verb:irr-custom-subj-raising", irr_feat, rel, obj_role, event_role, vform, "ppart"], fsa, "verb")
         add_lex(tps, lex, ["verb:irr-custom-subj-raising", irr_feat, rel, obj_role, event_role, vform, "3sgPres"], fsa, "verb")
 
+object_equi_verbs = [
+    ("advise", "Advise", "ADVISOR", "ADVISEE", "ADVICE")]
+
+def add_object_equi_verbs_to_lex(lex, fsa):
+    for form, rel, subj_role, obj_role, vp_role in object_equi_verbs:
+        add_lex(form, lex, ["verb:object-equi", rel, subj_role, obj_role, vp_role], fsa, "verb")
+
+irr_object_equi_verbs = [
+    ("tell", "told", "told", "Tell", "TELLER", "TELLEE", "TOLD")]
+
+def add_irr_object_equi_verbs_to_lex(lex, fsa):
+    for bare, past, ppart, rel, subj_role, obj_role, vp_role in irr_object_equi_verbs:
+        add_lex(bare, lex, ["verb:irr-object-equi", rel, subj_role, obj_role, vp_role, "bare"], fsa, "verb")
+        add_lex(past, lex, ["verb:irr-object-equi", rel, subj_role, obj_role, vp_role, "past"], fsa, "verb")
+        add_lex(ppart, lex, ["verb:irr-object-equi", rel, subj_role, obj_role, vp_role, "ppart"], fsa, "verb")
+
+object_raising_verbs = [
+    ("want", "WANT", "WANTER", "WANTED")]
+
+def add_object_raising_verbs_to_lex(lex, fsa):
+    for form, rel, subj_role, vp_role in object_raising_verbs:
+        add_lex(form, lex, ["verb:object-raising", rel, subj_role, vp_role], fsa, "verb")
+
+irr_object_raising_verbs = []
+
+def add_irr_object_raising_verbs_to_lex(lex, fsa):
+    for bare, past, ppart, rel, subj_role, vp_role, in irr_object_raising_verbs:
+        add_lex(bare, lex, ["verb:irr-object-raising", rel, subj_role, vp_role, "bare"], fsa, "verb")
+        add_lex(past, lex, ["verb:irr-object-raising", rel, subj_role, vp_role, "past"], fsa, "verb")
+        add_lex(ppart, lex, ["verb:irr-object-raising", rel, subj_role, vp_role, "ppart"], fsa, "verb")
+
 def add_verbs_to_lex(lex, fsa):
 
     add_copula_verbs_to_lex(lex, fsa)
@@ -512,3 +585,7 @@ def add_verbs_to_lex(lex, fsa):
     add_irr_subj_raising_verbs_to_lex(lex, fsa)
     add_custom_subj_raising_verbs_to_lex(lex, fsa)
     add_irr_custom_subj_raising_verbs_to_lex(lex, fsa)
+    add_object_equi_verbs_to_lex(lex, fsa)
+    add_irr_object_equi_verbs_to_lex(lex, fsa)
+    add_object_raising_verbs_to_lex(lex, fsa)
+    add_irr_object_raising_verbs_to_lex(lex, fsa)

@@ -15,10 +15,11 @@ def add_lex(form, lex, sign, fsa, tag):
     extend_fsa(fsa, form, tag)
 
 def get_next_index(next_index):
+    """ Return an index based on the current number, and increment that number """
     return 'x' + str(next_index), next_index + 1
 
 def add_role(next_index, relspec, role):
-    if type(next_index) is 'str':
+    if type(next_index) == 'str':
         relspec.roles[role] = next_index
     else:
         index, next_index = get_next_index(next_index)

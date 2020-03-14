@@ -3,7 +3,7 @@
 # src.parse.chart
 #
 
-from src.morph.fst import analyze_character, analyze_fsa_characters
+from src.morph.fst import FST
 from src.parse.morth import apply_morth
 
 ##  A parse chart consists of
@@ -140,10 +140,10 @@ class MorphAgenda():
         for agendum in self.agenda:
             begin = agendum.begin
             end = agendum.end
-            ortho_outs = analyze_character(self.ortho, agendum.ortho_state, letter)
+            ortho_outs = self.ortho.analyze_character(agendum.ortho_state, letter)
             for ortho_target, out_letters in ortho_outs:
                 new_result = agendum.result + ''.join(out_letters)
-                lex_targets = analyze_fsa_characters(self.lex, agendum.lex_state, out_letters)
+                lex_targets = self.lex.analyze_fsa_characters(agendum.lex_state, out_letters)
                 for lex_target in lex_targets:
                     new_agendum = MorphAgendum(self.utterance, begin, end+1, ortho_target, lex_target, new_result)
                     lex_tags = self.is_success(new_agendum)
